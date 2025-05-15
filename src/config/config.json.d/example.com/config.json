@@ -1,0 +1,43 @@
+{
+    "theme": "RelayOS",
+    "kiwiServer": "wss://example.com/webirc/websocket/",
+    "startupOptions": {
+        "server": "irc.example.com",
+        "port": 6697,
+        "tls": true,
+        "direct": false,
+        "channel": "#example",
+        "nick": "example-user-?"
+    },
+    "logo": "/static/example.com/img/logo.png",
+    "autoConnect": true,
+    "bypassAuth": false,
+    "defaultChannels": ["#example", "#help"],
+    "showConnectionStatus": true,
+    "debugMode": false,
+    "windowTitle": "RelayOS IRC - Example.com",
+    "startupScreen": "personal",
+    "restricted": false,
+    "embedly": {
+        "key": ""
+    },
+    "plugins": [
+        { "name": "customise", "url": "static/plugins/customise.html" }
+    ],
+    "features": {
+        "fileUploads": true,
+        "notifications": true,
+        "sounds": true,
+        "embeds": true,
+        "enableTabUnderOnClick": false
+    },
+    "ui": {
+        "showUserList": true,
+        "showHeader": true,
+        "showChannelList": true
+    },
+    "buffers": {
+        "messageLayout": "modern",
+        "show_joinparts": false
+    }
+}

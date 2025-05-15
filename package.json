@@ -5,13 +5,21 @@
   "author": "Darren <darren@darrenwhitlen.com>",
   "scripts": {
     "build": "vue-cli-service build --no-module",
+    "build:widget": "vue-cli-service build --no-module --entry=widget",
+    "build:inline": "vue-cli-service build --no-module --entry=inline",
+    "build:all": "npm-run-all build build:widget build:inline",
+    "build:themes": "node scripts/compile-themes.js",
     "test:unit": "vue-cli-service test:unit",
     "lint": "npm-run-all lint:*",
     "lint:eslint": "vue-cli-service lint --no-fix",
     "lint:stylelint": "stylelint \"src/**/*.{vue,htm,html,css,sss,less,scss}\"",
     "dev": "vue-cli-service serve",
+    "dev:widget": "vue-cli-service serve --entry=widget",
+    "dev:inline": "vue-cli-service serve --entry=inline",
     "test": "vue-cli-service test:unit",
-    "gendocs": "rm -rf srcdocs/ && jsdoc -c jsdoc.json"
+    "gendocs": "rm -rf srcdocs/ && jsdoc -c jsdoc.json",
+    "migrate-themes": "node scripts/migrate-themes.js",
+    "prebuild": "npm run build:themes"
   },
   "dependencies": {
     "@babel/runtime-corejs3": "^7.26.9",
@@ -69,6 +77,8 @@
     "postcss-html": "^1.8.0",
     "postcss-import": "^12.0.1",
     "postcss-url": "^9.0.0",
+    "sass": "^1.72.0",
+    "sass-loader": "^14.1.1",
     "stylelint": "^14.16.1",
     "stylelint-config-recommended-vue": "^1.6.0",
     "stylelint-config-standard": "^29.0.0",
