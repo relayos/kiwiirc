@@ -19,7 +19,7 @@ config.json.d/
 
 To add a configuration for a new hostname:
 
-1. Create a new directory with the hostname as the name (e.g., `mysite.com`)
+1. Create a new directory with the hostname as the name (e.g., `mysite.com')
 2. Create a `config.json` file in the new directory
 3. Add the host-specific configuration to the `config.json` file
 

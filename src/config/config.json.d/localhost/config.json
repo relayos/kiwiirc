@@ -1,9 +1,9 @@
 {
     "theme": "RelayOS",
-    "kiwiServer": "ws://localhost:8081/webirc/websocket/",
+    "kiwiServer": "ws://{{hostname}}:{{port}}/webirc/websocket/",
     "startupOptions": {
         "server": "localhost",
-        "port": 8081,
+        "port": "{{port}}",
         "tls": false,
         "direct": true,
         "channel": "#dev-test",

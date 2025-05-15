@@ -39,7 +39,7 @@ export default class ServerSession {
                 }
             });
 
-            this.channel.sendControl(`CONTROL AUTH ${userId} ${password}`);
+            this.channel.sendControl('CONTROL AUTH ${userId} ${password}');
         });
     }
 

@@ -35,158 +35,158 @@ $widget-box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 
 // Global styles
 body {
-  font-family: $font-family;
-  color: $color-text-primary;
-  background-color: $color-background;
+    font-family: $font-family;
+    color: $color-text-primary;
+    background-color: $color-background;
 }
 
 // App container
 .kiwi-wrap {
-  background-color: $color-background;
+    background-color: $color-background;
 }
 
 // Header
 .kiwi-header {
-  background-color: $color-primary;
-  color: $color-primary-text;
-  border-bottom: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: $color-primary;
+    color: $color-primary-text;
+    border-bottom: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 // Sidebar
 .kiwi-sidebar {
-  background-color: $color-surface;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: $color-surface;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 // StateBrowser
 .kiwi-statebrowser {
-  background-color: $color-surface;
+    background-color: $color-surface;
 }
 
 .kiwi-statebrowser-channel {
-  border-radius: $border-radius;
-  margin: 2px 5px;
-  
-  &:hover {
-    background-color: rgba($color-primary, 0.1);
-  }
-  
-  &.kiwi-statebrowser-channel--active {
-    background-color: rgba($color-primary, 0.2);
-    
-    .kiwi-statebrowser-channel-name {
-      color: $color-primary;
-      font-weight: 600;
+    border-radius: $border-radius;
+    margin: 2px 5px;
+
+    &:hover {
+        background-color: rgba($color-primary, 0.1);
     }
-  }
+
+    &.kiwi-statebrowser-channel--active {
+        background-color: rgba($color-primary, 0.2);
+
+        .kiwi-statebrowser-channel-name {
+            color: $color-primary;
+            font-weight: 600;
+        }
+    }
 }
 
 // MessageList
 .kiwi-messagelist {
-  background-color: $color-background;
+    background-color: $color-background;
 }
 
 .kiwi-messagelist-message {
-  border-radius: $border-radius;
-  margin-bottom: 4px;
-  
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.03);
-  }
+    border-radius: $border-radius;
+    margin-bottom: 4px;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
 }
 
 .kiwi-messagelist-message--highlight {
-  background-color: rgba($color-primary, 0.1);
+    background-color: rgba($color-primary, 0.1);
 }
 
 .kiwi-messagelist-body {
-  color: $color-text-primary;
+    color: $color-text-primary;
 }
 
 .kiwi-messagelist-nick {
-  font-weight: 600;
+    font-weight: 600;
 }
 
 // ControlInput
 .kiwi-controlinput {
-  background-color: $color-background;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: $color-background;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .kiwi-controlinput-inner {
-  background-color: $color-surface;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: $border-radius;
-  
-  &:focus-within {
-    border-color: $color-primary;
-    box-shadow: 0 0 0 2px rgba($color-primary, 0.25);
-  }
+    background-color: $color-surface;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: $border-radius;
+
+    &:focus-within {
+        border-color: $color-primary;
+        box-shadow: 0 0 0 2px rgba($color-primary, 0.25);
+    }
 }
 
 .kiwi-controlinput-input {
-  background-color: transparent;
-  color: $color-text-primary;
+    background-color: transparent;
+    color: $color-text-primary;
 }
 
 // Nicklist
 .kiwi-nicklist {
-  background-color: $color-surface;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: $color-surface;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .kiwi-nicklist-user {
-  border-radius: $border-radius;
-  margin: 2px 5px;
-  
-  &:hover {
-    background-color: rgba($color-primary, 0.1);
-  }
+    border-radius: $border-radius;
+    margin: 2px 5px;
+
+    &:hover {
+        background-color: rgba($color-primary, 0.1);
+    }
 }
 
 // Buttons
 .kiwi-button {
-  @include button-primary;
-  border-radius: $border-radius;
-  font-weight: 500;
+    @include button-primary;
+    border-radius: $border-radius;
+    font-weight: 500;
 }
 
 .kiwi-button--secondary {
-  @include button-outline;
+    @include button-outline;
 }
 
 // Inputs
 .kiwi-input {
-  @include input-base;
-  border-radius: $border-radius;
+    @include input-base;
+    border-radius: $border-radius;
 }
 
 // Widget-specific styles
 .kiwi-widget-container {
-  border-radius: $widget-border-radius;
-  box-shadow: $widget-box-shadow;
+    border-radius: $widget-border-radius;
+    box-shadow: $widget-box-shadow;
 }
 
 .kiwi-widget-minimized {
-  background-color: $color-primary;
-  color: $color-primary-text;
+    background-color: $color-primary;
+    color: $color-primary-text;
 }
 
 .kiwi-widget-expanded-header {
-  background-color: $color-primary;
-  color: $color-primary-text;
+    background-color: $color-primary;
+    color: $color-primary-text;
 }
 
 // Inline-specific styles
 .kiwi-inline-container {
-  border-radius: $border-radius;
-  border-color: rgba(0, 0, 0, 0.1);
+    border-radius: $border-radius;
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
 .kiwi-inline-header {
-  background-color: $color-primary;
-  color: $color-primary-text;
+    background-color: $color-primary;
+    color: $color-primary-text;
 }
 
 // Import component-specific styles

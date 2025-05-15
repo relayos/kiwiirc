@@ -41,7 +41,7 @@ Specific themes override the base theme variables to create different looks. Eac
 
 To create a new theme:
 
-1. Create a new directory in the `themes` directory with the name of your theme (e.g., `mytheme`)
+1. Create a new directory in the `themes` directory with the name of your theme (e.g., `mytheme')
 2. Create a `theme.scss` file in the new directory
 3. Import the base theme variables and mixins
 4. Override the variables as needed

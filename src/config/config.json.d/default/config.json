@@ -1,6 +1,6 @@
 {
     "theme": "Default",
-    "kiwiServer": "YOUR_GLOBAL_DEFAULT_WEBIRC_URL_OR_EMPTY",
+    "kiwiServer": "{{wsprotocol}}//{{hostname}}:{{port}}/webirc/websocket/",
     "startupOptions": {
         "server": "irc.libera.chat",
         "port": 6697,
