@@ -105,16 +105,37 @@ module.exports = {
         // Remove the old 'app' entry
         config.entryPoints.delete('app');
 
-        // IE11 required by the webpack runtime for async import().
-        // babel polyfills don't help us here
-        config.entry('app').add('core-js/features/promise');
+        // Get the entry point from the command line arguments
+        const entryArg = process.argv.find(arg => arg.startsWith('--entry='));
+        const entry = entryArg ? entryArg.split('=')[1] : null;
 
-        // IE11 play nice with vue-virtual-scroller
-        config.entry('app').add('core-js/features/array/virtual/find-index');
-        config.entry('app').add('core-js/features/array/virtual/includes');
+        // Define the entry points
+        const entryPoints = {
+            app: './src/main.js',
+            widget: './src/entry-points/widget.js',
+            inline: './src/entry-points/inline.js'
+        };
 
-        // Kiwiirc main entry point
-        config.entry('app').add('./src/main.js');
+        // If a specific entry point is specified, only build that one
+        const entriesToBuild = entry ? [entry] : Object.keys(entryPoints);
+
+        // Add the entry points
+        entriesToBuild.forEach(entryName => {
+            // IE11 required by the webpack runtime for async import().
+            // babel polyfills don't help us here
+            config.entry(entryName).add('core-js/features/promise');
+
+            // IE11 play nice with vue-virtual-scroller
+            config.entry(entryName).add('core-js/features/array/virtual/find-index');
+            config.entry(entryName).add('core-js/features/array/virtual/includes');
+
+            // Add the entry point
+            config.entry(entryName).add(entryPoints[entryName]);
+        });
+
+        // Configure output filenames
+        config.output.filename('[name]/[name].js');
+        config.output.chunkFilename('[name]/[name].[id].js');
     },
 };
 
