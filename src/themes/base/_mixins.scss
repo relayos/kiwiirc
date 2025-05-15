@@ -1,0 +1,418 @@
+// RelayOS KiwiIRC - Base Theme Mixins
+
+// Flexbox mixins
+@mixin flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+@mixin flex-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+// Typography mixins
+@mixin font-base {
+  font-family: $font-family;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  color: $color-text-primary;
+}
+
+@mixin font-small {
+  font-family: $font-family;
+  font-size: $font-size-small;
+  line-height: $line-height-base;
+  color: $color-text-primary;
+}
+
+@mixin font-large {
+  font-family: $font-family;
+  font-size: $font-size-large;
+  line-height: $line-height-base;
+  color: $color-text-primary;
+}
+
+@mixin font-xlarge {
+  font-family: $font-family;
+  font-size: $font-size-xlarge;
+  line-height: $line-height-base;
+  color: $color-text-primary;
+}
+
+@mixin font-xxlarge {
+  font-family: $font-family;
+  font-size: $font-size-xxlarge;
+  line-height: $line-height-base;
+  color: $color-text-primary;
+}
+
+// Border mixins
+@mixin border {
+  border: $border-width solid $border-color;
+}
+
+@mixin border-top {
+  border-top: $border-width solid $border-color;
+}
+
+@mixin border-right {
+  border-right: $border-width solid $border-color;
+}
+
+@mixin border-bottom {
+  border-bottom: $border-width solid $border-color;
+}
+
+@mixin border-left {
+  border-left: $border-width solid $border-color;
+}
+
+@mixin border-radius {
+  border-radius: $border-radius;
+}
+
+@mixin border-radius-small {
+  border-radius: $border-radius-small;
+}
+
+@mixin border-radius-large {
+  border-radius: $border-radius-large;
+}
+
+// Shadow mixins
+@mixin box-shadow {
+  box-shadow: $box-shadow;
+}
+
+@mixin box-shadow-hover {
+  box-shadow: $box-shadow-hover;
+}
+
+@mixin box-shadow-active {
+  box-shadow: $box-shadow-active;
+}
+
+// Transition mixins
+@mixin transition {
+  transition: all $transition-duration $transition-timing-function;
+}
+
+@mixin transition-property($property) {
+  transition: $property $transition-duration $transition-timing-function;
+}
+
+// Button mixins
+@mixin button-base {
+  height: $button-height;
+  padding: $button-padding;
+  border: $button-border-width solid $button-border-color;
+  border-radius: $button-border-radius;
+  background-color: $button-background-color;
+  color: $button-text-color;
+  font-family: $font-family;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  text-align: center;
+  cursor: pointer;
+  transition: all $transition-duration $transition-timing-function;
+
+  &:hover {
+    background-color: $button-hover-background-color;
+    color: $button-hover-text-color;
+  }
+
+  &:active {
+    background-color: $button-active-background-color;
+    color: $button-active-text-color;
+  }
+
+  &:disabled {
+    background-color: $button-disabled-background-color;
+    color: $button-disabled-text-color;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background-color: $color-primary;
+  color: $color-primary-text;
+  border-color: $color-primary;
+
+  &:hover {
+    background-color: $color-primary-dark;
+    color: $color-primary-text;
+    border-color: $color-primary-dark;
+  }
+
+  &:active {
+    background-color: $color-primary-dark;
+    color: $color-primary-text;
+    border-color: $color-primary-dark;
+  }
+
+  &:disabled {
+    background-color: rgba($color-primary, 0.5);
+    color: rgba($color-primary-text, 0.5);
+    border-color: rgba($color-primary, 0.5);
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background-color: $color-secondary;
+  color: $color-secondary-text;
+  border-color: $color-secondary;
+
+  &:hover {
+    background-color: $color-secondary-dark;
+    color: $color-secondary-text;
+    border-color: $color-secondary-dark;
+  }
+
+  &:active {
+    background-color: $color-secondary-dark;
+    color: $color-secondary-text;
+    border-color: $color-secondary-dark;
+  }
+
+  &:disabled {
+    background-color: rgba($color-secondary, 0.5);
+    color: rgba($color-secondary-text, 0.5);
+    border-color: rgba($color-secondary, 0.5);
+  }
+}
+
+@mixin button-outline {
+  @include button-base;
+  background-color: transparent;
+  color: $color-primary;
+  border-color: $color-primary;
+
+  &:hover {
+    background-color: rgba($color-primary, 0.1);
+    color: $color-primary;
+    border-color: $color-primary;
+  }
+
+  &:active {
+    background-color: rgba($color-primary, 0.2);
+    color: $color-primary;
+    border-color: $color-primary;
+  }
+
+  &:disabled {
+    background-color: transparent;
+    color: rgba($color-primary, 0.5);
+    border-color: rgba($color-primary, 0.5);
+  }
+}
+
+@mixin button-text {
+  @include button-base;
+  background-color: transparent;
+  color: $color-primary;
+  border-color: transparent;
+  padding: 0;
+  height: auto;
+
+  &:hover {
+    background-color: transparent;
+    color: $color-primary-dark;
+    border-color: transparent;
+  }
+
+  &:active {
+    background-color: transparent;
+    color: $color-primary-dark;
+    border-color: transparent;
+  }
+
+  &:disabled {
+    background-color: transparent;
+    color: rgba($color-primary, 0.5);
+    border-color: transparent;
+  }
+}
+
+// Input mixins
+@mixin input-base {
+  height: $input-height;
+  padding: $input-padding;
+  border: $input-border-width solid $input-border-color;
+  border-radius: $input-border-radius;
+  background-color: $input-background-color;
+  color: $input-text-color;
+  font-family: $font-family;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  transition: all $transition-duration $transition-timing-function;
+
+  &::placeholder {
+    color: $input-placeholder-color;
+  }
+
+  &:focus {
+    border-color: $input-focus-border-color;
+    box-shadow: $input-focus-box-shadow;
+    outline: none;
+  }
+
+  &:disabled {
+    background-color: rgba($input-background-color, 0.5);
+    color: rgba($input-text-color, 0.5);
+    cursor: not-allowed;
+  }
+}
+
+// Widget-specific mixins
+@mixin widget-container {
+  position: fixed;
+  z-index: $z-index-fixed;
+  font-family: $font-family;
+  box-shadow: $widget-box-shadow;
+  border-radius: $widget-border-radius;
+  overflow: hidden;
+  transition: all $transition-duration $transition-timing-function;
+}
+
+@mixin widget-minimized {
+  width: $widget-minimized-size;
+  height: $widget-minimized-size;
+  background-color: $color-primary;
+  color: $color-primary-text;
+  cursor: pointer;
+  @include flex-center;
+  border-radius: 50%;
+}
+
+@mixin widget-expanded {
+  width: $widget-width;
+  height: $widget-height;
+  @include flex-column;
+  background-color: $color-background;
+}
+
+// Inline-specific mixins
+@mixin inline-container {
+  @include flex-column;
+  height: 100%;
+  width: 100%;
+  min-height: $inline-min-height;
+  border: $border-width solid $inline-border-color;
+  border-radius: $inline-border-radius;
+  overflow: hidden;
+  font-family: $font-family;
+}
+
+@mixin inline-header {
+  @include flex-between;
+  padding: $spacing-small $spacing-medium;
+  background-color: $color-primary;
+  color: $color-primary-text;
+}
+
+@mixin inline-content {
+  flex: 1;
+  overflow: hidden;
+  @include flex-column;
+}
+
+// Message-specific mixins
+@mixin message {
+  padding: $message-padding;
+  border-radius: $message-border-radius;
+  background-color: $message-background-color;
+  color: $message-text-color;
+  margin-bottom: $spacing-small;
+}
+
+@mixin message-sender {
+  font-weight: bold;
+  color: $message-sender-color;
+}
+
+@mixin message-timestamp {
+  font-size: $font-size-small;
+  color: $message-timestamp-color;
+}
+
+@mixin message-highlight {
+  background-color: $message-highlight-background-color;
+}
+
+// Channel list mixins
+@mixin channel-list {
+  width: $channel-list-width;
+  background-color: $channel-list-background-color;
+  border-right: $border-width solid $channel-list-border-color;
+  overflow-y: auto;
+}
+
+@mixin channel-list-item {
+  height: $channel-list-item-height;
+  padding: $channel-list-item-padding;
+  background-color: $channel-list-item-background-color;
+  color: $channel-list-item-text-color;
+  @include flex-start;
+  cursor: pointer;
+  transition: all $transition-duration $transition-timing-function;
+
+  &:hover {
+    background-color: $channel-list-item-hover-background-color;
+    color: $channel-list-item-hover-text-color;
+  }
+
+  &.active {
+    background-color: $channel-list-item-active-background-color;
+    color: $channel-list-item-active-text-color;
+  }
+}
+
+// User list mixins
+@mixin user-list {
+  width: $user-list-width;
+  background-color: $user-list-background-color;
+  border-left: $border-width solid $user-list-border-color;
+  overflow-y: auto;
+}
+
+@mixin user-list-item {
+  height: $user-list-item-height;
+  padding: $user-list-item-padding;
+  background-color: $user-list-item-background-color;
+  color: $user-list-item-text-color;
+  @include flex-start;
+  cursor: pointer;
+  transition: all $transition-duration $transition-timing-function;
+
+  &:hover {
+    background-color: $user-list-item-hover-background-color;
+    color: $user-list-item-hover-text-color;
+  }
+}
