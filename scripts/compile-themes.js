@@ -54,12 +54,23 @@ async function compileTheme(themeName) {
     return;
   }
   
+  // Check if theme.scss exists
+  const themeScssPath = path.join(srcThemesDir, themeName, 'theme.scss');
+  try {
+    await stat(themeScssPath);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.log(`  Skipping ${themeName}: theme.scss not found`);
+      return;
+    }
+    throw err;
+  }
+  
   // Create the output directory
   const outputDir = path.join(staticThemesDir, themeName);
   await ensureDir(outputDir);
   
   // Compile the theme
-  const themeScssPath = path.join(srcThemesDir, themeName, 'theme.scss');
   const result = sass.renderSync({
     file: themeScssPath,
     outputStyle: 'compressed',
@@ -82,10 +93,13 @@ async function main() {
     
     // Get the list of themes
     const themes = await readdir(srcThemesDir);
-    
+
     // Compile each theme
     for (const theme of themes) {
-      if (theme !== 'base') {
+      // Skip the base directory and any files (only process directories)
+      const themePath = path.join(srcThemesDir, theme);
+      const stats = await stat(themePath);
+      if (theme !== 'base' && stats.isDirectory()) {
         await compileTheme(theme);
       }
     }
