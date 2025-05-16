@@ -20,13 +20,22 @@ export async function loadHostConfig(defaultConfig) {
     const hostname = window.location.hostname;
     log.info(`Detected hostname: ${hostname}`);
 
+    // Determine the base path for static resources
+    const basePath = window.location.pathname.split('/')[1] || '';
+    const baseUrl = basePath ? `/${basePath}` : '';
+
     try {
         // Try to load the host-specific configuration from the directory structure
-        const response = await fetch(`static/config.json.d/${hostname}/config.json`);
+        const response = await fetch(`${baseUrl}/static/config.json.d/${hostname}/config.json`);
 
         if (response.ok) {
             const hostConfig = await response.json();
             log.info(`Loaded host-specific configuration for ${hostname}`);
+
+            // Add the base path to the configuration
+            if (basePath && !hostConfig.baseUrl) {
+                hostConfig.baseUrl = baseUrl;
+            }
 
             // Merge the host-specific configuration with the default configuration
             return mergeConfigs(defaultConfig, hostConfig);
@@ -35,26 +44,31 @@ export async function loadHostConfig(defaultConfig) {
 
             // Try the old-style flat file as a fallback
             try {
-                const fallbackResponse = await fetch(`static/config.json.d/${hostname}.json`);
+                const fallbackResponse = await fetch(`${baseUrl}/static/config.json.d/${hostname}.json`);
 
                 if (fallbackResponse.ok) {
                     const fallbackConfig = await fallbackResponse.json();
                     log.info(`Loaded fallback configuration for ${hostname}`);
 
+                    // Add the base path to the configuration
+                    if (basePath && !fallbackConfig.baseUrl) {
+                        fallbackConfig.baseUrl = baseUrl;
+                    }
+
                     return mergeConfigs(defaultConfig, fallbackConfig);
                 } else {
                     log.info(`No fallback configuration found for ${hostname}, trying default config`);
-                    return loadDefaultConfig(defaultConfig);
+                    return loadDefaultConfig(defaultConfig, baseUrl);
                 }
             } catch (fallbackError) {
                 log.info(`No fallback configuration found for ${hostname}, trying default config`);
-                return loadDefaultConfig(defaultConfig);
+                return loadDefaultConfig(defaultConfig, baseUrl);
             }
         }
     } catch (error) {
         log.error(`Error loading host-specific configuration: ${error.message}`);
         log.info('Trying default config due to error');
-        return loadDefaultConfig(defaultConfig);
+        return loadDefaultConfig(defaultConfig, baseUrl);
     }
 }
 
@@ -89,6 +103,54 @@ export function loadHostConfigFromScript(defaultConfig) {
 }
 
 /**
+ * Load the default configuration
+ * @param {Object} defaultConfig - The default configuration object
+ * @param {string} baseUrl - The base URL path
+ * @returns {Promise<Object>} - The merged configuration object
+ */
+async function loadDefaultConfig(defaultConfig, baseUrl = '') {
+    try {
+        // Try to load the default configuration
+        const response = await fetch(`${baseUrl}/static/config.json.d/default/config.json`);
+
+        if (response.ok) {
+            const defaultHostConfig = await response.json();
+            log.info('Loaded default configuration');
+
+            // Add the base path to the configuration
+            if (baseUrl && !defaultHostConfig.baseUrl) {
+                defaultHostConfig.baseUrl = baseUrl;
+            }
+
+            // Merge the default host configuration with the default configuration
+            return mergeConfigs(defaultConfig, defaultHostConfig);
+        } else {
+            log.info('No default configuration found, using provided default');
+
+            // Add the base path to the default configuration
+            if (baseUrl && !defaultConfig.baseUrl) {
+                const configCopy = JSON.parse(JSON.stringify(defaultConfig));
+                configCopy.baseUrl = baseUrl;
+                return configCopy;
+            }
+
+            return defaultConfig;
+        }
+    } catch (error) {
+        log.error(`Error loading default configuration: ${error.message}`);
+
+        // Add the base path to the default configuration
+        if (baseUrl && !defaultConfig.baseUrl) {
+            const configCopy = JSON.parse(JSON.stringify(defaultConfig));
+            configCopy.baseUrl = baseUrl;
+            return configCopy;
+        }
+
+        return defaultConfig;
+    }
+}
+
+/**
  * Merge two configuration objects
  * @param {Object} defaultConfig - The default configuration object
  * @param {Object} hostConfig - The host-specific configuration object
@@ -116,32 +178,6 @@ function mergeConfigs(defaultConfig, hostConfig) {
 
     recursiveMerge(mergedConfig, hostConfig);
     return mergedConfig;
-}
-
-/**
- * Load the default configuration
- * @param {Object} defaultConfig - The default configuration object
- * @returns {Promise<Object>} - The merged configuration object
- */
-async function loadDefaultConfig(defaultConfig) {
-    try {
-        // Try to load the default configuration
-        const response = await fetch('static/config.json.d/default/config.json');
-
-        if (response.ok) {
-            const defaultHostConfig = await response.json();
-            log.info('Loaded default configuration');
-
-            // Merge the default host configuration with the default configuration
-            return mergeConfigs(defaultConfig, defaultHostConfig);
-        } else {
-            log.info('No default configuration found, using provided default');
-            return defaultConfig;
-        }
-    } catch (error) {
-        log.error(`Error loading default configuration: ${error.message}`);
-        return defaultConfig;
-    }
 }
 
 export default {
