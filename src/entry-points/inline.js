@@ -38,7 +38,7 @@ api.setRenderingMode('inline');
 
 /**
  * RelayOS KiwiIRC Inline Chat
- * 
+ *
  * This class provides the API for embedding the RelayOS KiwiIRC inline chat in any website.
  */
 class RelayOSInline {
@@ -57,17 +57,17 @@ class RelayOSInline {
             showChannelList: options.showChannelList !== undefined ? options.showChannelList : true,
             onConnect: options.onConnect || null,
             onDisconnect: options.onDisconnect || null,
-            onMessage: options.onMessage || null
+            onMessage: options.onMessage || null,
         };
-        
+
         this.app = null;
         this.state = getState();
         this.initialized = false;
-        
+
         // Initialize the inline chat
         this.init();
     }
-    
+
     /**
      * Initialize the inline chat
      * @private
@@ -76,28 +76,28 @@ class RelayOSInline {
         try {
             // Load configuration
             await this.loadConfig();
-            
+
             // Create the container
             this.createContainer();
-            
+
             // Initialize the theme
             this.initTheme();
-            
+
             // Mount the Vue app
             this.mountApp();
-            
+
             // Connect to the IRC server
             if (this.options.server) {
                 this.connect();
             }
-            
+
             this.initialized = true;
             log.info('Inline chat initialized');
         } catch (error) {
             log.error('Error initializing inline chat:', error);
         }
     }
-    
+
     /**
      * Load the inline chat configuration
      * @private
@@ -105,12 +105,12 @@ class RelayOSInline {
     async loadConfig() {
         let configFile = 'static/inline-config.json';
         let configObj = null;
-        
+
         // Check for a meta tag with configuration
         if (document.querySelector('meta[name="kiwiconfig"]')) {
             configFile = document.querySelector('meta[name="kiwiconfig"]').content;
         }
-        
+
         // Check for a script tag with configuration
         if (document.querySelector('script[name="kiwiconfig"]')) {
             try {
@@ -119,7 +119,7 @@ class RelayOSInline {
                 log.error('Error parsing config from script tag:', error);
             }
         }
-        
+
         // Create a config loader
         let configLoader = new ConfigLoader();
         configLoader
@@ -136,33 +136,33 @@ class RelayOSInline {
             .addValueReplacement('hash', (window.location.hash || '').substr(1))
             .addValueReplacement('query', (window.location.search || '').substr(1))
             .addValueReplacement('referrer', window.document.referrer);
-        
+
         // Load the configuration
         let config = configObj ?
             await configLoader.loadFromObj(configObj) :
             await configLoader.loadFromUrl(configFile);
-        
+
         // Load host-specific configuration
         config = await loadHostConfig(config);
-        
+
         // Apply the configuration to the state
         Misc.dedotObject(config);
         this.applyConfig(config);
-        
+
         // Override with options passed to the constructor
         if (this.options.server) {
             this.state.settings.startupOptions.server = this.options.server;
         }
-        
+
         if (this.options.channel) {
             this.state.settings.startupOptions.channel = this.options.channel;
         }
-        
+
         if (this.options.theme) {
             this.state.settings.theme = this.options.theme;
         }
     }
-    
+
     /**
      * Apply the configuration to the state
      * @param {Object} config - The configuration object
@@ -182,10 +182,10 @@ class RelayOSInline {
                 }
             });
         }
-        
+
         applyConfigObj(config, this.state.settings);
     }
-    
+
     /**
      * Create the container
      * @private
@@ -198,7 +198,7 @@ class RelayOSInline {
             } else {
                 this.container = this.options.container;
             }
-            
+
             if (!this.container) {
                 throw new Error(`Container not found: ${this.options.container}`);
             }
@@ -209,7 +209,7 @@ class RelayOSInline {
             document.body.appendChild(this.container);
         }
     }
-    
+
     /**
      * Initialize the theme
      * @private
@@ -218,14 +218,14 @@ class RelayOSInline {
         let themeMgr = ThemeManager.instance(this.state);
         api.setThemeManager(themeMgr);
     }
-    
+
     /**
      * Mount the Vue app
      * @private
      */
     mountApp() {
         const self = this;
-        
+
         // Create the Vue app
         this.app = new Vue({
             el: this.container,
@@ -233,49 +233,49 @@ class RelayOSInline {
                 return {
                     title: self.options.title,
                     showSettings: self.options.showSettings,
-                    showChannelList: self.options.showChannelList
+                    showChannelList: self.options.showChannelList,
                 };
             },
             computed: {
                 $state() {
                     return getState();
-                }
+                },
             },
             methods: {
                 onToggleSettings(isOpen) {
                     log.info('Settings toggled:', isOpen);
-                }
+                },
             },
             render(h) {
                 return h(InlineContainer, {
                     props: {
                         title: this.title,
-                        showSettings: this.showSettings
+                        showSettings: this.showSettings,
                     },
                     on: {
-                        'toggle-settings': this.onToggleSettings
-                    }
+                        'toggle-settings': this.onToggleSettings,
+                    },
                 }, [
                     h('div', { class: 'kiwi-inline-layout' }, [
                         this.showChannelList ? h('div', { class: 'kiwi-inline-sidebar' }, [
-                            h(StateBrowser)
+                            h(StateBrowser),
                         ]) : null,
                         h('div', { class: 'kiwi-inline-main' }, [
                             h(MessageList),
-                            h(ControlInput)
-                        ])
-                    ])
+                            h(ControlInput),
+                        ]),
+                    ]),
                 ]);
-            }
+            },
         });
-        
+
         // Make the app instance available via the API
         api.setVueInstance(this.app);
-        
+
         // Add inline-specific styles
         this.addInlineStyles();
     }
-    
+
     /**
      * Add inline-specific styles
      * @private
@@ -288,13 +288,13 @@ class RelayOSInline {
                 height: 100%;
                 width: 100%;
             }
-            
+
             .kiwi-inline-sidebar {
                 width: 200px;
                 border-right: 1px solid #e0e0e0;
                 overflow-y: auto;
             }
-            
+
             .kiwi-inline-main {
                 flex: 1;
                 display: flex;
@@ -304,7 +304,7 @@ class RelayOSInline {
         `;
         document.head.appendChild(style);
     }
-    
+
     /**
      * Connect to the IRC server
      * @public
@@ -314,15 +314,15 @@ class RelayOSInline {
             log.warn('Inline chat not initialized yet, connection deferred');
             return;
         }
-        
+
         // TODO: Implement connection logic
         log.info('Connecting to IRC server');
-        
+
         if (this.options.onConnect) {
             this.options.onConnect();
         }
     }
-    
+
     /**
      * Disconnect from the IRC server
      * @public
@@ -332,15 +332,15 @@ class RelayOSInline {
             log.warn('Inline chat not initialized yet');
             return;
         }
-        
+
         // TODO: Implement disconnection logic
         log.info('Disconnecting from IRC server');
-        
+
         if (this.options.onDisconnect) {
             this.options.onDisconnect();
         }
     }
-    
+
     /**
      * Send a message to the current channel
      * @param {string} message - The message to send
@@ -351,11 +351,11 @@ class RelayOSInline {
             log.warn('Inline chat not initialized yet');
             return;
         }
-        
+
         // TODO: Implement message sending logic
         log.info('Sending message:', message);
     }
-    
+
     /**
      * Join a channel
      * @param {string} channel - The channel to join
@@ -366,11 +366,11 @@ class RelayOSInline {
             log.warn('Inline chat not initialized yet');
             return;
         }
-        
+
         // TODO: Implement channel joining logic
         log.info('Joining channel:', channel);
     }
-    
+
     /**
      * Leave a channel
      * @param {string} channel - The channel to leave
@@ -381,11 +381,11 @@ class RelayOSInline {
             log.warn('Inline chat not initialized yet');
             return;
         }
-        
+
         // TODO: Implement channel leaving logic
         log.info('Leaving channel:', channel);
     }
-    
+
     /**
      * Set the theme
      * @param {string} theme - The theme name
@@ -396,10 +396,10 @@ class RelayOSInline {
             log.warn('Inline chat not initialized yet');
             return;
         }
-        
+
         api.getThemeManager().setTheme(theme);
     }
-    
+
     /**
      * Get the current theme
      * @returns {string} - The current theme name
@@ -410,10 +410,10 @@ class RelayOSInline {
             log.warn('Inline chat not initialized yet');
             return null;
         }
-        
+
         return api.getThemeManager().getCurrentTheme();
     }
-    
+
     /**
      * Get the available themes
      * @returns {Array} - The available themes
@@ -424,7 +424,7 @@ class RelayOSInline {
             log.warn('Inline chat not initialized yet');
             return [];
         }
-        
+
         return api.getThemeManager().getAvailableThemes();
     }
 }
@@ -438,18 +438,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scriptTag && scriptTag.getAttribute('data-auto-init') !== 'false') {
         // Parse options from data attributes
         const options = {};
-        for (const attr of scriptTag.attributes) {
+        Array.from(scriptTag.attributes).forEach((attr) => {
             if (attr.name.startsWith('data-')) {
                 const optionName = attr.name.replace('data-', '').replace(/-([a-z])/g, (g) => g[1].toUpperCase());
                 if (optionName !== 'relayosInline' && optionName !== 'autoInit') {
                     options[optionName] = attr.value;
                 }
             }
-        }
-        
+        });
+
         // Create the inline chat
-        new RelayOSInline(options);
+        return new RelayOSInline(options);
     }
+    return null;
 });
 
 export default RelayOSInline;

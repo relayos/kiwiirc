@@ -29,9 +29,9 @@ module.exports = {
                     'forward',
                     'function',
                     'return',
-                    'content'
-                ]
-            }
+                    'content',
+                ],
+            },
         ],
         'color-function-notation': null,
         'color-hex-case': null,

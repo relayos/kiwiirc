@@ -41,7 +41,7 @@ module.exports = {
                     // replace the vendors test so it does not chunk css files
                     vendors: {
                         name: 'vendor',
-                        test: (m) => /[\\/]node_modules[\\/]/.test(m.context) && m.constructor.name !== 'CssModule',
+                        test: (m) => (/[\\/]node_modules[\\/]/.test(m.context) && m.constructor.name !== 'CssModule'),
                     },
                 },
             },
@@ -106,21 +106,21 @@ module.exports = {
         config.entryPoints.delete('app');
 
         // Get the entry point from the command line arguments
-        const entryArg = process.argv.find(arg => arg.startsWith('--entry='));
+        const entryArg = process.argv.find((arg) => arg.startsWith('--entry='));
         const entry = entryArg ? entryArg.split('=')[1] : null;
 
         // Define the entry points
         const entryPoints = {
             app: './src/main.js',
             widget: './src/entry-points/widget.js',
-            inline: './src/entry-points/inline.js'
+            inline: './src/entry-points/inline.js',
         };
 
         // If a specific entry point is specified, only build that one
         const entriesToBuild = entry ? [entry] : Object.keys(entryPoints);
 
         // Add the entry points
-        entriesToBuild.forEach(entryName => {
+        entriesToBuild.forEach((entryName) => {
             // IE11 required by the webpack runtime for async import().
             // babel polyfills don't help us here
             config.entry(entryName).add('core-js/features/promise');

@@ -37,7 +37,7 @@ api.setRenderingMode('widget');
 
 /**
  * RelayOS KiwiIRC Widget
- * 
+ *
  * This class provides the API for embedding the RelayOS KiwiIRC widget in any website.
  */
 class RelayOSWidget {
@@ -57,17 +57,17 @@ class RelayOSWidget {
             onStateChange: options.onStateChange || null,
             onConnect: options.onConnect || null,
             onDisconnect: options.onDisconnect || null,
-            onMessage: options.onMessage || null
+            onMessage: options.onMessage || null,
         };
-        
+
         this.app = null;
         this.state = getState();
         this.initialized = false;
-        
+
         // Initialize the widget
         this.init();
     }
-    
+
     /**
      * Initialize the widget
      * @private
@@ -76,28 +76,28 @@ class RelayOSWidget {
         try {
             // Load configuration
             await this.loadConfig();
-            
+
             // Create the widget container
             this.createContainer();
-            
+
             // Initialize the theme
             this.initTheme();
-            
+
             // Mount the Vue app
             this.mountApp();
-            
+
             // Connect to the IRC server
             if (this.options.server) {
                 this.connect();
             }
-            
+
             this.initialized = true;
             log.info('Widget initialized');
         } catch (error) {
             log.error('Error initializing widget:', error);
         }
     }
-    
+
     /**
      * Load the widget configuration
      * @private
@@ -105,12 +105,12 @@ class RelayOSWidget {
     async loadConfig() {
         let configFile = 'static/widget-config.json';
         let configObj = null;
-        
+
         // Check for a meta tag with configuration
         if (document.querySelector('meta[name="kiwiconfig"]')) {
             configFile = document.querySelector('meta[name="kiwiconfig"]').content;
         }
-        
+
         // Check for a script tag with configuration
         if (document.querySelector('script[name="kiwiconfig"]')) {
             try {
@@ -119,7 +119,7 @@ class RelayOSWidget {
                 log.error('Error parsing config from script tag:', error);
             }
         }
-        
+
         // Create a config loader
         let configLoader = new ConfigLoader();
         configLoader
@@ -136,33 +136,33 @@ class RelayOSWidget {
             .addValueReplacement('hash', (window.location.hash || '').substr(1))
             .addValueReplacement('query', (window.location.search || '').substr(1))
             .addValueReplacement('referrer', window.document.referrer);
-        
+
         // Load the configuration
         let config = configObj ?
             await configLoader.loadFromObj(configObj) :
             await configLoader.loadFromUrl(configFile);
-        
+
         // Load host-specific configuration
         config = await loadHostConfig(config);
-        
+
         // Apply the configuration to the state
         Misc.dedotObject(config);
         this.applyConfig(config);
-        
+
         // Override with options passed to the constructor
         if (this.options.server) {
             this.state.settings.startupOptions.server = this.options.server;
         }
-        
+
         if (this.options.channel) {
             this.state.settings.startupOptions.channel = this.options.channel;
         }
-        
+
         if (this.options.theme) {
             this.state.settings.theme = this.options.theme;
         }
     }
-    
+
     /**
      * Apply the configuration to the state
      * @param {Object} config - The configuration object
@@ -182,10 +182,10 @@ class RelayOSWidget {
                 }
             });
         }
-        
+
         applyConfigObj(config, this.state.settings);
     }
-    
+
     /**
      * Create the widget container
      * @private
@@ -198,7 +198,7 @@ class RelayOSWidget {
             } else {
                 this.container = this.options.container;
             }
-            
+
             if (!this.container) {
                 throw new Error(`Container not found: ${this.options.container}`);
             }
@@ -209,7 +209,7 @@ class RelayOSWidget {
             document.body.appendChild(this.container);
         }
     }
-    
+
     /**
      * Initialize the theme
      * @private
@@ -218,14 +218,14 @@ class RelayOSWidget {
         let themeMgr = ThemeManager.instance(this.state);
         api.setThemeManager(themeMgr);
     }
-    
+
     /**
      * Mount the Vue app
      * @private
      */
     mountApp() {
         const self = this;
-        
+
         // Create the Vue app
         this.app = new Vue({
             el: this.container,
@@ -234,44 +234,44 @@ class RelayOSWidget {
                     title: self.options.title,
                     position: self.options.position,
                     initialState: self.options.initialState,
-                    minimized: self.options.initialState === 'minimized'
+                    minimized: self.options.initialState === 'minimized',
                 };
             },
             computed: {
                 $state() {
                     return getState();
-                }
+                },
             },
             methods: {
                 onStateChange(state) {
                     if (self.options.onStateChange) {
                         self.options.onStateChange(state);
                     }
-                }
+                },
             },
             render(h) {
                 return h(WidgetContainer, {
                     props: {
                         title: this.title,
                         position: this.position,
-                        initialState: this.initialState
+                        initialState: this.initialState,
                     },
                     on: {
-                        'state-change': this.onStateChange
-                    }
+                        'state-change': this.onStateChange,
+                    },
                 }, [
                     h('div', { class: 'kiwi-widget-content' }, [
                         h(MessageList),
-                        h(ControlInput)
-                    ])
+                        h(ControlInput),
+                    ]),
                 ]);
-            }
+            },
         });
-        
+
         // Make the app instance available via the API
         api.setVueInstance(this.app);
     }
-    
+
     /**
      * Connect to the IRC server
      * @public
@@ -281,15 +281,15 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet, connection deferred');
             return;
         }
-        
+
         // TODO: Implement connection logic
         log.info('Connecting to IRC server');
-        
+
         if (this.options.onConnect) {
             this.options.onConnect();
         }
     }
-    
+
     /**
      * Disconnect from the IRC server
      * @public
@@ -299,15 +299,15 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet');
             return;
         }
-        
+
         // TODO: Implement disconnection logic
         log.info('Disconnecting from IRC server');
-        
+
         if (this.options.onDisconnect) {
             this.options.onDisconnect();
         }
     }
-    
+
     /**
      * Minimize the widget
      * @public
@@ -317,13 +317,13 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet');
             return;
         }
-        
+
         const widgetContainer = this.app.$children[0];
         if (widgetContainer && typeof widgetContainer.minimize === 'function') {
             widgetContainer.minimize();
         }
     }
-    
+
     /**
      * Expand the widget
      * @public
@@ -333,13 +333,13 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet');
             return;
         }
-        
+
         const widgetContainer = this.app.$children[0];
         if (widgetContainer && typeof widgetContainer.expand === 'function') {
             widgetContainer.expand();
         }
     }
-    
+
     /**
      * Send a message to the current channel
      * @param {string} message - The message to send
@@ -350,11 +350,11 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet');
             return;
         }
-        
+
         // TODO: Implement message sending logic
         log.info('Sending message:', message);
     }
-    
+
     /**
      * Join a channel
      * @param {string} channel - The channel to join
@@ -365,11 +365,11 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet');
             return;
         }
-        
+
         // TODO: Implement channel joining logic
         log.info('Joining channel:', channel);
     }
-    
+
     /**
      * Leave a channel
      * @param {string} channel - The channel to leave
@@ -380,11 +380,11 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet');
             return;
         }
-        
+
         // TODO: Implement channel leaving logic
         log.info('Leaving channel:', channel);
     }
-    
+
     /**
      * Set the theme
      * @param {string} theme - The theme name
@@ -395,10 +395,10 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet');
             return;
         }
-        
+
         api.getThemeManager().setTheme(theme);
     }
-    
+
     /**
      * Get the current theme
      * @returns {string} - The current theme name
@@ -409,10 +409,10 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet');
             return null;
         }
-        
+
         return api.getThemeManager().getCurrentTheme();
     }
-    
+
     /**
      * Get the available themes
      * @returns {Array} - The available themes
@@ -423,7 +423,7 @@ class RelayOSWidget {
             log.warn('Widget not initialized yet');
             return [];
         }
-        
+
         return api.getThemeManager().getAvailableThemes();
     }
 }
@@ -437,18 +437,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scriptTag && scriptTag.getAttribute('data-auto-init') !== 'false') {
         // Parse options from data attributes
         const options = {};
-        for (const attr of scriptTag.attributes) {
+        Array.from(scriptTag.attributes).forEach((attr) => {
             if (attr.name.startsWith('data-')) {
                 const optionName = attr.name.replace('data-', '').replace(/-([a-z])/g, (g) => g[1].toUpperCase());
                 if (optionName !== 'relayosWidget' && optionName !== 'autoInit') {
                     options[optionName] = attr.value;
                 }
             }
-        }
-        
+        });
+
         // Create the widget
-        new RelayOSWidget(options);
+        return new RelayOSWidget(options);
     }
+    return null;
 });
 
 export default RelayOSWidget;
