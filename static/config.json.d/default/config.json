@@ -1,5 +1,9 @@
 {
     "theme": "Default",
+    "themes": [
+        { "name": "Default", "url": "static/themes/default" },
+        { "name": "Dark", "url": "static/themes/dark" }
+    ],
     "kiwiServer": "{{wsprotocol}}//{{hostname}}:{{port}}/webirc/websocket/",
     "startupOptions": {
         "server": "irc.libera.chat",

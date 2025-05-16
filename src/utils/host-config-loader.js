@@ -21,41 +21,68 @@ export async function loadHostConfig(defaultConfig) {
     log.info(`Detected hostname: ${hostname}`);
 
     // Determine the base path for static resources
-    const basePath = window.location.pathname.split('/')[1] || '';
-    const baseUrl = basePath ? `/${basePath}` : '';
+    // Get the full path without the hostname and protocol
+    const fullPath = window.location.pathname;
+    // Remove trailing slash if present
+    const normalizedPath = fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath;
+
+    // Extract the application root path (e.g., /relayos-kiwiirc/)
+    // This assumes the application is always mounted at a path like /relayos-kiwiirc/
+    // and not at the root of the domain
+    let baseUrl = '/';
+
+    // Check if we're in a path that starts with /relayos-kiwiirc/
+    if (normalizedPath.includes('/relayos-kiwiirc')) {
+        baseUrl = '/relayos-kiwiirc/';
+        log.info(`Using fixed application root path: ${baseUrl}`);
+    } else {
+        // For other cases, extract the first path segment
+        const pathParts = normalizedPath.split('/');
+        if (pathParts.length > 1 && pathParts[1]) {
+            baseUrl = '/' + pathParts[1] + '/';
+            log.info(`Using detected application root path: ${baseUrl}`);
+        }
+    }
+
+    // Log the detected base URL for debugging
+    log.info(`Using base URL: ${baseUrl} (original path: ${normalizedPath})`);
 
     try {
         // Try to load the host-specific configuration from the directory structure
-        const response = await fetch(`${baseUrl}/static/config.json.d/${hostname}/config.json`);
+        const configUrl = `${baseUrl}config.json.d/${hostname}/config.json`;
+        log.info(`Fetching config from: ${configUrl}`);
+        const response = await fetch(configUrl);
 
         if (response.ok) {
             const hostConfig = await response.json();
             log.info(`Loaded host-specific configuration for ${hostname}`);
 
             // Add the base path to the configuration
-            if (basePath && !hostConfig.baseUrl) {
+            if (baseUrl && !hostConfig.baseUrl) {
                 hostConfig.baseUrl = baseUrl;
             }
 
-            // Merge the host-specific configuration with the default configuration
-            return mergeConfigs(defaultConfig, hostConfig);
+            // Return the host-specific configuration directly without merging
+            return hostConfig;
         } else {
             log.info(`No host-specific configuration found for ${hostname}, trying fallback`);
 
             // Try the old-style flat file as a fallback
             try {
-                const fallbackResponse = await fetch(`${baseUrl}/static/config.json.d/${hostname}.json`);
+                const fallbackUrl = `${baseUrl}config.json.d/${hostname}.json`;
+                log.info(`Fetching config from: ${fallbackUrl}`);
+                const fallbackResponse = await fetch(fallbackUrl);
 
                 if (fallbackResponse.ok) {
                     const fallbackConfig = await fallbackResponse.json();
                     log.info(`Loaded fallback configuration for ${hostname}`);
 
                     // Add the base path to the configuration
-                    if (basePath && !fallbackConfig.baseUrl) {
+                    if (baseUrl && !fallbackConfig.baseUrl) {
                         fallbackConfig.baseUrl = baseUrl;
                     }
 
-                    return mergeConfigs(defaultConfig, fallbackConfig);
+                    return fallbackConfig;
                 } else {
                     log.info(`No fallback configuration found for ${hostname}, trying default config`);
                     return loadDefaultConfig(defaultConfig, baseUrl);
@@ -89,8 +116,8 @@ export function loadHostConfigFromScript(defaultConfig) {
             const hostConfig = JSON5.parse(scriptTag.innerHTML);
             log.info(`Loaded host-specific configuration for ${hostname} from script tag`);
 
-            // Merge the host-specific configuration with the default configuration
-            return mergeConfigs(defaultConfig, hostConfig);
+            // Return the host-specific configuration directly without merging
+            return hostConfig;
         } catch (error) {
             log.error(`Error parsing host-specific configuration from script tag: ${error.message}`);
             log.info('Trying default config due to script tag error');
@@ -111,7 +138,9 @@ export function loadHostConfigFromScript(defaultConfig) {
 async function loadDefaultConfig(defaultConfig, baseUrl = '') {
     try {
         // Try to load the default configuration
-        const response = await fetch(`${baseUrl}/static/config.json.d/default/config.json`);
+        const defaultConfigUrl = `${baseUrl}config.json.d/default/config.json`;
+        log.info(`Fetching config from: ${defaultConfigUrl}`);
+        const response = await fetch(defaultConfigUrl);
 
         if (response.ok) {
             const defaultHostConfig = await response.json();
@@ -122,8 +151,8 @@ async function loadDefaultConfig(defaultConfig, baseUrl = '') {
                 defaultHostConfig.baseUrl = baseUrl;
             }
 
-            // Merge the default host configuration with the default configuration
-            return mergeConfigs(defaultConfig, defaultHostConfig);
+            // Return the default host configuration directly without merging
+            return defaultHostConfig;
         } else {
             log.info('No default configuration found, using provided default');
 
@@ -148,36 +177,6 @@ async function loadDefaultConfig(defaultConfig, baseUrl = '') {
 
         return defaultConfig;
     }
-}
-
-/**
- * Merge two configuration objects
- * @param {Object} defaultConfig - The default configuration object
- * @param {Object} hostConfig - The host-specific configuration object
- * @returns {Object} - The merged configuration object
- */
-function mergeConfigs(defaultConfig, hostConfig) {
-    // Create a deep copy of the default configuration
-    const mergedConfig = JSON.parse(JSON.stringify(defaultConfig));
-
-    // Recursively merge the host-specific configuration into the default configuration
-    function recursiveMerge(target, source) {
-        Object.keys(source).forEach((key) => {
-            if (source[key] !== null && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-                // If the key doesn't exist in the target or is not an object, create it
-                if (!target[key] || typeof target[key] !== 'object') {
-                    target[key] = {};
-                }
-                recursiveMerge(target[key], source[key]);
-            } else {
-                // Otherwise, just copy the value
-                target[key] = source[key];
-            }
-        });
-    }
-
-    recursiveMerge(mergedConfig, hostConfig);
-    return mergedConfig;
 }
 
 export default {

@@ -148,6 +148,14 @@ export default class GlobalApi extends EventEmitter {
     }
 
     /**
+     * Set the current rendering mode (app, inline, widget)
+     * @param {string} mode The rendering mode
+     */
+    setRenderingMode(mode) {
+        this.renderingMode = mode;
+    }
+
+    /**
      * Change the logging level output
      * @param {number} newLevel The new logging level
      */

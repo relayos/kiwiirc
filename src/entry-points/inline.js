@@ -10,6 +10,7 @@ import ThemeManager from '@/libs/ThemeManager';
 import GlobalApi from '@/libs/GlobalApi';
 import * as Misc from '@/helpers/Misc';
 import { loadHostConfig } from '@/utils/host-config-loader';
+import { loadRenderingModeCSS } from '@/utils/rendering-mode-loader';
 
 // Import inline components
 import InlineContainer from '@/components/inline/InlineContainer';
@@ -214,9 +215,16 @@ class RelayOSInline {
      * Initialize the theme
      * @private
      */
-    initTheme() {
+    async initTheme() {
         let themeMgr = ThemeManager.instance(this.state);
         api.setThemeManager(themeMgr);
+
+        // Load the rendering mode-specific CSS
+        try {
+            await loadRenderingModeCSS();
+        } catch (error) {
+            log.error('Failed to load rendering mode CSS:', error);
+        }
     }
 
     /**

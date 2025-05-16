@@ -38,14 +38,20 @@ export default class ThemeManager {
     }
 
     availableThemes() {
-        return this.state.getSetting('settings.themes');
+        const themes = this.state.getSetting('settings.themes');
+        log.debug('Available themes:', themes);
+        return themes;
     }
 
     findTheme(name) {
         if (!name) {
             return null;
         }
-        return _.find(this.availableThemes(), (t) => t.name.toLowerCase() === name.toLowerCase());
+        log.debug('Finding theme:', name);
+        const theme =
+            _.find(this.availableThemes(), (t) => t.name.toLowerCase() === name.toLowerCase());
+        log.debug('Found theme:', theme);
+        return theme;
     }
 
     currentTheme() {

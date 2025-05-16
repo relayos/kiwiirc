@@ -33,6 +33,7 @@ import { SoundBleep } from '@/libs/SoundBleep';
 import WindowTitle from '@/libs/WindowTitle';
 import { configTemplates } from '@/res/configTemplates';
 import { loadHostConfig } from '@/utils/host-config-loader';
+import { loadRenderingModeCSS } from '@/utils/rendering-mode-loader';
 
 import AvailableLocales from '@/res/locales/available.json';
 import FallbackLocale from '@/../static/locales/en-us.json';
@@ -572,6 +573,14 @@ function initThemes() {
     let argTheme = getQueryVariable('theme');
     let themeMgr = ThemeManager.instance(getState(), argTheme);
     api.setThemeManager(themeMgr);
+
+    // Set the rendering mode to fullscreen for the main app
+    api.setRenderingMode('fullscreen');
+
+    // Load the rendering mode-specific CSS
+    loadRenderingModeCSS().catch((error) => {
+        log.error('Failed to load rendering mode CSS:', error);
+    });
 }
 
 function initSound() {

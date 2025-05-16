@@ -1,5 +1,10 @@
 {
     "theme": "RelayOS",
+    "themes": [
+        { "name": "RelayOS", "url": "/relayos-kiwiirc/themes/relayos" },
+        { "name": "Default", "url": "static/themes/default" },
+        { "name": "Dark", "url": "static/themes/dark" }
+    ],
     "kiwiServer": "ws://localhost:8067/webirc/websocket/",
     "startupOptions": {
         "server": "localhost",
@@ -16,7 +21,7 @@
     "showConnectionStatus": true,
     "debugMode": true,
     "windowTitle": "RelayOS IRC - Local Development",
-    "startupScreen": "personal",
+    "startupScreen": "welcome",
     "restricted": false,
     "embedly": {
         "key": ""
