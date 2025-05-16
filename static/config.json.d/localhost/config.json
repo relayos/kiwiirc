@@ -1,6 +1,8 @@
 {
     "theme": "RelayOS",
     "themes": [
+        { "name": "RelayOS", "isNewStyle": true },
+        { "name": "Default", "isNewStyle": true },
         { "name": "RelayOS", "url": "/relayos-kiwiirc/themes/relayos" },
         { "name": "Default", "url": "static/themes/default" },
         { "name": "Dark", "url": "static/themes/dark" }

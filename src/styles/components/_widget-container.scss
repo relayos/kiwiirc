@@ -1,0 +1,60 @@
+/* Widget Container Component Styles */
+@import '../base/variables';
+@import '../base/mixins';
+
+@mixin widget-container-theme {
+    .kiwi-widget-container {
+        @include widget-container;
+    }
+
+    .kiwi-widget-minimized {
+        @include widget-minimized;
+    }
+
+    .kiwi-widget-expanded {
+        @include widget-expanded;
+    }
+
+    .kiwi-widget-expanded-header {
+        background-color: $color-primary;
+        color: $color-primary-text;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $spacing-small;
+    }
+
+    .kiwi-widget-expanded-header-title {
+        font-weight: 600;
+        font-size: $font-size-large;
+    }
+
+    .kiwi-widget-expanded-header-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .kiwi-widget-expanded-header-action {
+        cursor: pointer;
+        padding: $spacing-xsmall;
+        margin-left: $spacing-small;
+        color: $color-primary-text;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .kiwi-widget-expanded-content {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        background-color: $color-background;
+    }
+}
+
+/* Apply the mixin by default */
+@include widget-container-theme;

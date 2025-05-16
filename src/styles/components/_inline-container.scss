@@ -1,0 +1,43 @@
+/* Inline Container Component Styles */
+@import '../base/variables';
+@import '../base/mixins';
+
+@mixin inline-container-theme {
+    .kiwi-inline-container {
+        @include inline-container;
+    }
+
+    .kiwi-inline-header {
+        @include inline-header;
+    }
+
+    .kiwi-inline-header-title {
+        font-weight: 600;
+        font-size: $font-size-large;
+    }
+
+    .kiwi-inline-header-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .kiwi-inline-header-action {
+        cursor: pointer;
+        padding: $spacing-xsmall;
+        margin-left: $spacing-small;
+        color: $color-primary-text;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .kiwi-inline-content {
+        @include inline-content;
+    }
+}
+
+/* Apply the mixin by default */
+@include inline-container-theme;

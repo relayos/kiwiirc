@@ -306,56 +306,5 @@ export default {
 </script>
 
 <style>
-
-.kiwi-startbnc-form label {
-    text-align: left;
-    display: block;
-    margin-bottom: 1.5em;
-}
-
-.kiwi-startbnc-form input,
-.kiwi-startbnc-form input:active {
-    font-size: 1em;
-    width: 100%;
-    box-sizing: border-box;
-    line-height: 30px;
-    padding: 0 10px;
-    border: none;
-    border-bottom: 2px solid #42b992;
-    outline: none;
-}
-
-.kiwi-startbnc-status {
-    margin: 1em 0;
-    overflow: hidden;
-    max-height: 40px;
-    transition: max-height 0.2s;
-}
-
-.kiwi-startbnc-status:empty {
-    background: red;
-    max-height: 0;
-}
-
-.kiwi-startbnc-start {
-    font-size: 1.1em;
-    cursor: pointer;
-}
-
-.kiwi-startbnc-form {
-    width: 300px;
-    background-color: #fff;
-    border-radius: 0.5em;
-    padding: 1em;
-    border: 1px solid #ececec;
-}
-
-.kiwi-startbnc-form button {
-    width: 100%;
-    line-height: 36px;
-    padding: 0;
-    font-size: 1.2em;
-    font-weight: normal;
-}
-
+/* Styles moved to src/styles/components/_kiwi-bnc.scss */
 </style>

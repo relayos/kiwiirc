@@ -1,0 +1,45 @@
+/* KiwiBnc Component Styles */
+@import '../base/variables';
+@import '../base/mixins';
+
+@mixin kiwi-bnc-theme {
+    .kiwi-bnc-header {
+        border-bottom: 2px solid $color-primary;
+        margin-bottom: 1em;
+        padding-bottom: 0.5em;
+    }
+
+    .kiwi-bnc-input {
+        background-color: $color-background;
+        border: 1px solid $border-color;
+        border-radius: $border-radius;
+        padding: $spacing-small;
+        margin-bottom: $spacing-medium;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .kiwi-bnc-button {
+        @include button-primary;
+        margin-top: $spacing-medium;
+    }
+
+    .kiwi-bnc-error {
+        color: $color-error;
+        margin-top: $spacing-small;
+        font-size: $font-size-small;
+    }
+
+    .kiwi-bnc-link {
+        color: $color-primary;
+        text-decoration: none;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+/* Apply the mixin by default */
+@include kiwi-bnc-theme;

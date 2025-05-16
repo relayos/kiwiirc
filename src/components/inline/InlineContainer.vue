@@ -45,48 +45,5 @@ export default {
 </script>
 
 <style>
-.kiwi-inline-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    min-height: 300px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-}
-
-.kiwi-inline-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 15px;
-    background-color: #2196f3;
-    color: white;
-}
-
-.kiwi-inline-title {
-    font-weight: bold;
-}
-
-.kiwi-inline-controls {
-    display: flex;
-}
-
-.kiwi-inline-settings {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 5px;
-    font-size: 14px;
-}
-
-.kiwi-inline-content {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
+/* Styles moved to src/styles/components/_inline-container.scss */
 </style>
