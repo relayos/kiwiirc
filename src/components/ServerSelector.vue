@@ -1,6 +1,6 @@
 <template>
     <div
-        :class="{'kiwi-serverselector--custom': presetServer === 'custom'}"
+        :class="{ 'kiwi-serverselector--custom': presetServer === 'custom' }"
         class="kiwi-serverselector"
     >
         <div v-if="usePreset && presetNetworks.length > 0" class="kiwi-serverselector-presets">
@@ -19,7 +19,7 @@
                 </template>
                 <option
                     v-for="(s, idx) in presetNetworks"
-                    :key="'preset_'+idx"
+                    :key="`preset_${idx}`"
                     :value="idx"
                 >{{ s.name }}</option>
             </select>
@@ -42,7 +42,7 @@
                     >
                         <option
                             v-for="(s, idx) in serverProtocols"
-                            :key="'proto_'+idx"
+                            :key="`proto_${idx}`"
                             :value="s"
                         >{{ s }}://</option>
                     </select>
@@ -66,12 +66,12 @@
                 >
                     <span
                         class="kiwi-serverselector-connection-tls"
-                        :class="{'kiwi-serverselector-connection-tls--disabled': disabled}"
+                        :class="{ 'kiwi-serverselector-connection-tls--disabled': disabled }"
                         @click="toggleTls"
                     >
                         <i
                             class="fa fa-stack-1x fa-fw"
-                            :class="[connection.tls ? 'fa-lock' : 'fa-unlock' ]"
+                            :class="[connection.tls ? 'fa-lock' : 'fa-unlock']"
                         />
                     </span>
                 </input-text>
@@ -368,4 +368,20 @@ export default {
 .kiwi-serverselector-type {
     grid-column: 1 / 4;
 }
+
+@media screen and (max-width: 400px) {
+    .kiwi-serverselector-connection {
+        grid-template-columns: auto minmax(0, max-content);
+    }
+
+    .kiwi-serverselector-connection-proto select {
+        width: 100%;
+    }
+
+    .kiwi-serverselector-connection-address {
+        grid-row: 1;
+        grid-column: 1 / span 2;
+    }
+}
+
 </style>
