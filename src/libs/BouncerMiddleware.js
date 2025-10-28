@@ -142,8 +142,8 @@ function addFunctionsToClient(client) {
     bnc.bufferSeen = function bufferSeen(netId, bufferName, seenTime) {
         return new Promise((resolve, reject) => {
             // 1 tells the bouncer to use the current time
-            let timeStr = seenTime ? Misc.dateIso(seenTime) : '1';
-            client.raw(`BOUNCER changebuffer ${netId} ${bufferName} seen=${timeStr}`);
+            let seen = seenTime ? Misc.dateIso(seenTime) : '1';
+            client.raw(`BOUNCER changebuffer ${netId} ${bufferName} seen=${seen}`);
         });
     };
 

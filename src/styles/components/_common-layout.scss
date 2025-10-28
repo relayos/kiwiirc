@@ -1,0 +1,120 @@
+/* Common Layout Component Styles */
+@import '../base/variables';
+@import '../base/mixins';
+
+@mixin common-layout-theme {
+    .kiwi-startup-common {
+        height: 100%;
+        text-align: center;
+        display: flex;
+    }
+
+    .kiwi-startup-common-section {
+        padding: 1em;
+        box-sizing: border-box;
+        height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        transition: transform 0.4s;
+    }
+
+    .kiwi-startup-common-section-connection {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40%;
+        max-width: 500px;
+    }
+
+    .kiwi-startup-common-section-info {
+        color: $color-primary-text;
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        background-size: cover;
+        background-position: bottom;
+        border-left: 5px solid $color-primary;
+    }
+
+    .kiwi-startup-common-section-info-content {
+        background: rgba(255, 255, 255, 0.74);
+        margin: 2em;
+        color: $color-text-primary;
+        font-size: 1.5em;
+        padding: 2em;
+        border-radius: $border-radius;
+        line-height: 1.6em;
+    }
+
+    .kiwi-fontawesome-preload {
+        position: absolute;
+        top: 0;
+        left: -50px;
+        width: 1px;
+        height: 1px;
+    }
+
+    .kiwi-startup-common--no-bg .kiwi-startup-common-section-info {
+        background-color: rgb(51, 51, 51);
+    }
+
+    @media (min-width: 850px) {
+        .kiwi-startup-common--closing .kiwi-startup-common-section-connection {
+            transform: translateX(-100%);
+        }
+
+        .kiwi-startup-common--closing .kiwi-startup-common-section-info {
+            transform: translateX(100%);
+        }
+    }
+
+    @media (max-width: 850px) {
+        .kiwi-startup-common {
+            font-size: 0.9em;
+            display: block;
+            overflow-y: auto;
+        }
+
+        .kiwi-startup-common-section {
+            width: 100%;
+            min-height: auto;
+            max-width: none;
+            height: auto;
+            align-items: flex-start;
+        }
+
+        .kiwi-startup-common--closing {
+            transition: transform 0.3s;
+            transform: translateY(100%);
+        }
+
+        .kiwi-startup-common-section-connection {
+            padding-top: 2em;
+        }
+
+        .kiwi-startup-common-section-connection > * {
+            max-width: 450px;
+        }
+
+        .kiwi-startup-common-section-info {
+            background-size: 0;
+            border-left: none;
+            flex: 1 0;
+            display: block;
+        }
+
+        .kiwi-startup-common--no-bg .kiwi-startup-common-section-info {
+            border-top: 5px solid $color-primary;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .kiwi-startup-common-section-info-content {
+            margin: 1em;
+        }
+    }
+}
+
+/* Apply the mixin by default */
+@include common-layout-theme;

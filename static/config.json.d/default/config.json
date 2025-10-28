@@ -1,0 +1,49 @@
+{
+    "theme": "Default",
+    "themes": [
+        { "name": "Default", "isNewStyle": true },
+        { "name": "RelayOS", "isNewStyle": true },
+        { "name": "Default", "url": "static/themes/default" },
+        { "name": "Dark", "url": "static/themes/dark" }
+    ],
+    "kiwiServer": "{{wsprotocol}}//{{hostname}}:{{port}}/webirc/websocket/",
+    "startupOptions": {
+        "server": "irc.libera.chat",
+        "port": 6697,
+        "tls": true,
+        "direct": false,
+        "channel": "#general",
+        "nick": "relayos-user-?"
+    },
+    "logo": "/static/img/logo.svg",
+    "autoConnect": false,
+    "bypassAuth": false,
+    "defaultChannels": ["#general", "#help"],
+    "showConnectionStatus": true,
+    "debugMode": false,
+    "windowTitle": "RelayOS IRC - The web IRC client",
+    "startupScreen": "welcome",
+    "restricted": true,
+    "embedly": {
+        "key": ""
+    },
+    "plugins": [
+        { "name": "customise", "url": "static/plugins/customise.html" }
+    ],
+    "features": {
+        "fileUploads": true,
+        "notifications": true,
+        "sounds": true,
+        "embeds": true,
+        "enableTabUnderOnClick": false
+    },
+    "ui": {
+        "showUserList": true,
+        "showHeader": true,
+        "showChannelList": true
+    },
+    "buffers": {
+        "messageLayout": "modern",
+        "show_joinparts": false
+    }
+}

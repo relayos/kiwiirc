@@ -19,6 +19,7 @@ export default class ThemeManager {
         this.varsElement = null;
         this.currentElement = null;
         this.loadingElement = null;
+        this.renderingMode = null;
 
         Vue.observable(this);
 
@@ -30,6 +31,32 @@ export default class ThemeManager {
     }
 
     static themeUrl(theme) {
+    // Check if this is a new-style theme from the styles directory
+        if (theme.isNewStyle) {
+            // Determine the base path for static resources
+            // Get the full path without the hostname and protocol
+            const fullPath = window.location.pathname;
+            // Remove trailing slash if present
+            const normalizedPath = fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath;
+
+            // Extract the application root path (e.g., /relayos-kiwiirc/)
+            let baseUrl = '/';
+
+            // Check if we're in a path that starts with /relayos-kiwiirc/
+            if (normalizedPath.includes('/relayos-kiwiirc')) {
+                baseUrl = '/relayos-kiwiirc/';
+            } else {
+                // For other cases, extract the first path segment
+                const pathParts = normalizedPath.split('/');
+                if (pathParts.length > 1 && pathParts[1]) {
+                    baseUrl = '/' + pathParts[1] + '/';
+                }
+            }
+
+            return `${baseUrl}styles/themes/${theme.name.toLowerCase()}/theme.css`;
+        }
+
+        // Legacy theme URL handling
         let [url, qs] = theme.url.split('?');
         if (url[url.length - 1] !== '/') {
             url += '/';
@@ -37,15 +64,77 @@ export default class ThemeManager {
         return url + 'theme.css' + (qs ? '?' + qs : '');
     }
 
+    static renderingModeUrl(mode) {
+        // Determine the base path for static resources
+        // Get the full path without the hostname and protocol
+        const fullPath = window.location.pathname;
+        // Remove trailing slash if present
+        const normalizedPath = fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath;
+
+        // Extract the application root path (e.g., /relayos-kiwiirc/)
+        let baseUrl = '/';
+
+        // Check if we're in a path that starts with /relayos-kiwiirc/
+        if (normalizedPath.includes('/relayos-kiwiirc')) {
+            baseUrl = '/relayos-kiwiirc/';
+        } else {
+            // For other cases, extract the first path segment
+            const pathParts = normalizedPath.split('/');
+            if (pathParts.length > 1 && pathParts[1]) {
+                baseUrl = '/' + pathParts[1] + '/';
+            }
+        }
+
+        return `${baseUrl}styles/render-modes/${mode}.css`;
+    }
+
     availableThemes() {
-        return this.state.getSetting('settings.themes');
+        const themes = this.state.getSetting('settings.themes');
+
+        // Add new-style themes if they're not already in the list
+        const newStyleThemes = [
+            { name: 'Default', isNewStyle: true },
+            { name: 'RelayOS', isNewStyle: true },
+        ];
+
+        newStyleThemes.forEach((newTheme) => {
+            const exists = _.find(
+                themes,
+                (t) => t.name.toLowerCase() === newTheme.name.toLowerCase()
+            );
+            if (!exists) {
+                themes.push(newTheme);
+            } else if (!exists.isNewStyle) {
+                // Update existing theme to use new style
+                exists.isNewStyle = true;
+            }
+        });
+
+        log.debug('Available themes:', themes);
+        return themes;
     }
 
     findTheme(name) {
         if (!name) {
             return null;
         }
-        return _.find(this.availableThemes(), (t) => t.name.toLowerCase() === name.toLowerCase());
+        log.debug('Finding theme:', name);
+        const theme =
+            _.find(this.availableThemes(), (t) => t.name.toLowerCase() === name.toLowerCase());
+        log.debug('Found theme:', theme);
+        return theme;
+    }
+
+    setRenderingMode(mode) {
+        if (this.renderingMode === mode) {
+            return;
+        }
+
+        this.renderingMode = mode;
+        log.debug('Setting rendering mode:', mode);
+
+        // Reload the theme to apply the rendering mode
+        this.reload();
     }
 
     currentTheme() {
@@ -61,13 +150,23 @@ export default class ThemeManager {
                 : theme,
         );
 
-        if (!nextTheme || !nextTheme.url) {
+        if (!nextTheme) {
             // Tried to set an invalid theme, abort
             // reset the theme setting name to current if its not valid
-            if (this.activeTheme.name !== this.state.setting('theme')) {
+            if (this.activeTheme && this.activeTheme.name !== this.state.setting('theme')) {
                 this.state.setting('theme', this.activeTheme.name);
             }
             log.error('Invalid theme', nextTheme);
+            return;
+        }
+
+        // For new-style themes, we don't need a URL
+        if (!nextTheme.isNewStyle && !nextTheme.url) {
+            // Tried to set an invalid legacy theme, abort
+            if (this.activeTheme && this.activeTheme.name !== this.state.setting('theme')) {
+                this.state.setting('theme', this.activeTheme.name);
+            }
+            log.error('Invalid legacy theme (missing URL)', nextTheme);
             return;
         }
 
@@ -78,7 +177,7 @@ export default class ThemeManager {
             this.loadingElement = null;
         }
 
-        if (this.activeTheme && this.activeTheme.url === nextTheme.url) {
+        if (this.activeTheme && this.activeTheme.name === nextTheme.name) {
             // Theme did not change, abort
             return;
         }
@@ -110,6 +209,11 @@ export default class ThemeManager {
                 }
 
                 this.state.$emit('theme.change', nextTheme, this.previousTheme);
+
+                // If we have a rendering mode, load it now
+                if (this.renderingMode) {
+                    this.loadRenderingMode(this.renderingMode);
+                }
             };
 
             themeElement.onerror = () => {
@@ -117,7 +221,9 @@ export default class ThemeManager {
                 document.head.removeChild(this.loadingElement);
                 this.loadingElement = null;
 
-                if (nextNameLower === 'custom' && !/\/theme\.css(\?|$)/.test(nextTheme.url)) {
+                if (nextNameLower === 'custom' &&
+                    !nextTheme.isNewStyle &&
+                    !/\/theme\.css(\?|$)/.test(nextTheme.url)) {
                     // For custom themes try appending /theme.css
                     this.setCustomThemeUrl(ThemeManager.themeUrl(nextTheme));
                     return;
@@ -136,10 +242,41 @@ export default class ThemeManager {
 
         themeElement.rel = 'stylesheet';
         themeElement.type = 'text/css';
-        themeElement.href = (nextNameLower !== 'custom')
-            ? ThemeManager.themeUrl(nextTheme)
-            : nextTheme.url;
+
+        if (nextTheme.isNewStyle) {
+            themeElement.href = ThemeManager.themeUrl(nextTheme);
+        } else if (nextNameLower !== 'custom') {
+            themeElement.href = ThemeManager.themeUrl(nextTheme);
+        } else {
+            themeElement.href = nextTheme.url;
+        }
+
         document.head.appendChild(themeElement);
+    }
+
+    loadRenderingMode(mode) {
+        // Remove any existing rendering mode stylesheet
+        const existingElement = document.getElementById('rendering-mode-stylesheet');
+        if (existingElement) {
+            document.head.removeChild(existingElement);
+        }
+
+        // Create a new link element for the rendering mode
+        const renderingModeElement = document.createElement('link');
+        renderingModeElement.rel = 'stylesheet';
+        renderingModeElement.type = 'text/css';
+        renderingModeElement.id = 'rendering-mode-stylesheet';
+        renderingModeElement.href = ThemeManager.renderingModeUrl(mode);
+
+        renderingModeElement.onload = () => {
+            log.debug(`Rendering mode ${mode} loaded successfully`);
+        };
+
+        renderingModeElement.onerror = () => {
+            log.error(`Failed to load rendering mode ${mode}`);
+        };
+
+        document.head.appendChild(renderingModeElement);
     }
 
     setCustomThemeUrl(url) {
@@ -158,6 +295,13 @@ export default class ThemeManager {
             return;
         }
 
+        if (theme.isNewStyle) {
+            // For new-style themes, just re-apply the theme
+            this.setTheme(theme.name);
+            return;
+        }
+
+        // Legacy theme URL handling
         let url = theme.url;
         if (url.indexOf('cb=') > -1) {
             url = url.replace(/cb=[0-9]+/, () => 'cb=' + Date.now());

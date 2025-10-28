@@ -32,6 +32,8 @@ import { AudioManager } from '@/libs/AudioManager';
 import { SoundBleep } from '@/libs/SoundBleep';
 import WindowTitle from '@/libs/WindowTitle';
 import { configTemplates } from '@/res/configTemplates';
+import { loadHostConfig } from '@/utils/host-config-loader';
+import { loadRenderingModeCSS } from '@/utils/rendering-mode-loader';
 
 import AvailableLocales from '@/res/locales/available.json';
 import FallbackLocale from '@/../static/locales/en-us.json';
@@ -228,22 +230,19 @@ Vue.directive('resizeobserver', {
 loadApp();
 
 function loadApp() {
-    let configFile = 'static/config.json';
     let configObj = null;
 
     /**
      * Finding the config file
      * In order, looks in the following places:
-     *   1. If a 'config' argument is in the query string, static/config_THEVALUE_.json
-     *   2. If a window.kiwiConfig function exists, use it's return value as the config object.
-     *   3. If a <meta name="kiwiconfig" content=""> is found, then the content becomes the config
+     *   1. If a window.kiwiConfig function exists, use it's return value as the config object.
+     *   2. If a <meta name="kiwiconfig" content=""> is found, then the content becomes the config
      *      URL.
-     *   4. If a <script name="kiwiconfig" type="application/json"></script> is found, then the
+     *   3. If a <script name="kiwiconfig" type="application/json"></script> is found, then the
      *      content becomes the config JSON without making another web request.
+     *   4. Otherwise, use the host-config-loader to load the host-specific config
      */
-    if (getQueryVariable('config')) {
-        configFile = 'static/config_' + getQueryVariable('config') + '.json';
-    } else if (typeof window.kiwiConfig === 'function') {
+    if (typeof window.kiwiConfig === 'function') {
         try {
             configObj = window.kiwiConfig();
         } catch (err) {
@@ -251,7 +250,41 @@ function loadApp() {
             showError();
         }
     } else if (document.querySelector('meta[name="kiwiconfig"]')) {
-        configFile = document.querySelector('meta[name="kiwiconfig"]').content;
+        let configUrl = document.querySelector('meta[name="kiwiconfig"]').content;
+        // If the configUrl is a relative path, make it absolute
+        if (configUrl.indexOf('://') === -1) {
+            configUrl = new URL(configUrl, window.location.href).href;
+        }
+
+        // Create a new ConfigLoader and load from the URL
+        let configLoader = new ConfigLoader();
+        configLoader
+            .addValueReplacement('protocol', window.location.protocol)
+            .addValueReplacement('wsprotocol', window.location.protocol === 'https:' ? 'wss:' : 'ws:')
+            .addValueReplacement('tls', window.location.protocol === 'https:')
+            .addValueReplacement('hostname', window.location.hostname)
+            .addValueReplacement('host', window.location.host)
+            .addValueReplacement('port', window.location.port || (
+                window.location.protocol === 'https:' ?
+                    443 :
+                    80
+            ))
+            .addValueReplacement('hash', (window.location.hash || '').substr(1))
+            .addValueReplacement('query', (window.location.search || '').substr(1))
+            .addValueReplacement('referrer', window.document.referrer);
+
+        configLoader.loadFromUrl(configUrl)
+            .then(applyConfig)
+            .then(initState)
+            .then(initInputCommands)
+            .then(initLocales)
+            .then(initThemes)
+            .then(loadPlugins)
+            .then(initSound)
+            .then(startApp)
+            .catch(showError);
+
+        return; // Exit early since we've started the loading process
     } else if (document.querySelector('script[name="kiwiconfig"]')) {
         let configContents = document.querySelector('script[name="kiwiconfig"]').innerHTML;
 
@@ -263,6 +296,7 @@ function loadApp() {
         }
     }
 
+    // Create a basic config with replacements
     let configLoader = new ConfigLoader();
     configLoader
         .addValueReplacement('protocol', window.location.protocol)
@@ -279,16 +313,36 @@ function loadApp() {
         .addValueReplacement('query', (window.location.search || '').substr(1))
         .addValueReplacement('referrer', window.document.referrer);
 
-    (configObj ? configLoader.loadFromObj(configObj) : configLoader.loadFromUrl(configFile))
-        .then(applyConfig)
-        .then(initState)
-        .then(initInputCommands)
-        .then(initLocales)
-        .then(initThemes)
-        .then(loadPlugins)
-        .then(initSound)
-        .then(startApp)
-        .catch(showError);
+    // If we have a config object, load it directly
+    if (configObj) {
+        configLoader.loadFromObj(configObj)
+            .then(applyConfig)
+            .then(initState)
+            .then(initInputCommands)
+            .then(initLocales)
+            .then(initThemes)
+            .then(loadPlugins)
+            .then(initSound)
+            .then(startApp)
+            .catch(showError);
+    } else {
+        // Otherwise, create an empty config object and let loadHostConfig handle loading
+        // the host-specific or default config
+        const emptyConfig = {};
+
+        // Apply the replacements to the empty config
+        configLoader.loadFromObj(emptyConfig)
+            .then((config) => loadHostConfig(config))
+            .then(applyConfig)
+            .then(initState)
+            .then(initInputCommands)
+            .then(initLocales)
+            .then(initThemes)
+            .then(loadPlugins)
+            .then(initSound)
+            .then(startApp)
+            .catch(showError);
+    }
 }
 
 function applyConfig(config) {
@@ -519,6 +573,14 @@ function initThemes() {
     let argTheme = getQueryVariable('theme');
     let themeMgr = ThemeManager.instance(getState(), argTheme);
     api.setThemeManager(themeMgr);
+
+    // Set the rendering mode to fullscreen for the main app
+    api.setRenderingMode('fullscreen');
+
+    // Load the rendering mode-specific CSS
+    loadRenderingModeCSS().catch((error) => {
+        log.error('Failed to load rendering mode CSS:', error);
+    });
 }
 
 function initSound() {

@@ -1,0 +1,196 @@
+// RelayOS KiwiIRC - RelayOS Theme
+
+// Import base theme variables and mixins
+@import '../base/variables';
+@import '../base/mixins';
+
+// Override variables with RelayOS-specific values
+$color-primary: #4A90E2;
+$color-primary-light: lighten($color-primary, 15%);
+$color-primary-dark: darken($color-primary, 15%);
+$color-primary-text: #FFFFFF;
+
+$color-secondary: #FF6B6B;
+$color-secondary-light: lighten($color-secondary, 15%);
+$color-secondary-dark: darken($color-secondary, 15%);
+$color-secondary-text: #FFFFFF;
+
+$color-background: #FFFFFF;
+$color-surface: #F8F9FA;
+$color-error: #FF5252;
+$color-success: #4CAF50;
+$color-warning: #FFC107;
+$color-info: #4A90E2;
+
+$font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+$border-radius: 6px;
+$border-radius-small: 4px;
+$border-radius-large: 12px;
+
+// Widget-specific overrides
+$widget-border-radius: 12px;
+$widget-box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+
+// Apply RelayOS-specific styles
+
+// Global styles
+body {
+    font-family: $font-family;
+    color: $color-text-primary;
+    background-color: $color-background;
+}
+
+// App container
+.kiwi-wrap {
+    background-color: $color-background;
+}
+
+// Header
+.kiwi-header {
+    background-color: $color-primary;
+    color: $color-primary-text;
+    border-bottom: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+// Sidebar
+.kiwi-sidebar {
+    background-color: $color-surface;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+// StateBrowser
+.kiwi-statebrowser {
+    background-color: $color-surface;
+}
+
+.kiwi-statebrowser-channel {
+    border-radius: $border-radius;
+    margin: 2px 5px;
+
+    &:hover {
+        background-color: rgba($color-primary, 0.1);
+    }
+
+    &.kiwi-statebrowser-channel--active {
+        background-color: rgba($color-primary, 0.2);
+
+        .kiwi-statebrowser-channel-name {
+            color: $color-primary;
+            font-weight: 600;
+        }
+    }
+}
+
+// MessageList
+.kiwi-messagelist {
+    background-color: $color-background;
+}
+
+.kiwi-messagelist-message {
+    border-radius: $border-radius;
+    margin-bottom: 4px;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+}
+
+.kiwi-messagelist-message--highlight {
+    background-color: rgba($color-primary, 0.1);
+}
+
+.kiwi-messagelist-body {
+    color: $color-text-primary;
+}
+
+.kiwi-messagelist-nick {
+    font-weight: 600;
+}
+
+// ControlInput
+.kiwi-controlinput {
+    background-color: $color-background;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.kiwi-controlinput-inner {
+    background-color: $color-surface;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: $border-radius;
+
+    &:focus-within {
+        border-color: $color-primary;
+        box-shadow: 0 0 0 2px rgba($color-primary, 0.25);
+    }
+}
+
+.kiwi-controlinput-input {
+    background-color: transparent;
+    color: $color-text-primary;
+}
+
+// Nicklist
+.kiwi-nicklist {
+    background-color: $color-surface;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.kiwi-nicklist-user {
+    border-radius: $border-radius;
+    margin: 2px 5px;
+
+    &:hover {
+        background-color: rgba($color-primary, 0.1);
+    }
+}
+
+// Buttons
+.kiwi-button {
+    @include button-primary;
+    border-radius: $border-radius;
+    font-weight: 500;
+}
+
+.kiwi-button--secondary {
+    @include button-outline;
+}
+
+// Inputs
+.kiwi-input {
+    @include input-base;
+    border-radius: $border-radius;
+}
+
+// Widget-specific styles
+.kiwi-widget-container {
+    border-radius: $widget-border-radius;
+    box-shadow: $widget-box-shadow;
+}
+
+.kiwi-widget-minimized {
+    background-color: $color-primary;
+    color: $color-primary-text;
+}
+
+.kiwi-widget-expanded-header {
+    background-color: $color-primary;
+    color: $color-primary-text;
+}
+
+// Inline-specific styles
+.kiwi-inline-container {
+    border-radius: $border-radius;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.kiwi-inline-header {
+    background-color: $color-primary;
+    color: $color-primary-text;
+}
+
+// Import component-specific styles
+// @import 'components/message-list';
+// @import 'components/control-input';
+// @import 'components/state-browser';
+// @import 'components/nicklist';

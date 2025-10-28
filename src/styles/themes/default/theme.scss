@@ -1,0 +1,59 @@
+/* Default Theme */
+@import '../../base/variables';
+@import '../../base/mixins';
+@import '../../base/reset';
+@import '../../components/common-layout';
+@import '../../components/sidebar';
+@import '../../components/widget-container';
+@import '../../components/inline-container';
+@import '../../components/kiwi-bnc';
+
+/* Override variables with default theme values */
+
+/* These are already defined in the base variables, so we don't need to redefine them */
+
+/* Re-export CSS variables with theme values */
+:root {
+    --brand-primary: #{$color-primary};
+    --brand-primary-light: #{$color-primary-light};
+    --brand-primary-dark: #{$color-primary-dark};
+    --brand-primary-text: #{$color-primary-text};
+    --brand-secondary: #{$color-secondary};
+    --brand-secondary-light: #{$color-secondary-light};
+    --brand-secondary-dark: #{$color-secondary-dark};
+    --brand-secondary-text: #{$color-secondary-text};
+    --brand-background: #{$color-background};
+    --brand-surface: #{$color-surface};
+    --brand-error: #{$color-error};
+    --brand-success: #{$color-success};
+    --brand-warning: #{$color-warning};
+    --brand-info: #{$color-info};
+    --brand-text-primary: #{$color-text-primary};
+    --brand-text-secondary: #{$color-text-secondary};
+    --brand-text-disabled: #{$color-text-disabled};
+    --brand-text-hint: #{$color-text-hint};
+    --brand-border-color: #{$border-color};
+    --brand-border-width: #{$border-width};
+    --brand-border-radius: #{$border-radius};
+    --brand-input-border: #{$input-border-color};
+    --brand-input-bg: #{$input-background-color};
+    --brand-default-bg: #{$color-background};
+}
+
+/* Additional theme-specific styles */
+body {
+    font-family: $font-family;
+    color: $color-text-primary;
+    background-color: $color-background;
+}
+
+.kiwi-wrap {
+    background-color: $color-background;
+}
+
+.kiwi-header {
+    background-color: $color-primary;
+    color: $color-primary-text;
+    border-bottom: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

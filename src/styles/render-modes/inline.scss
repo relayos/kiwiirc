@@ -1,0 +1,112 @@
+/* Inline Rendering Mode Styles */
+@import '../base/variables';
+@import '../base/mixins';
+
+/* Override specific variables for inline mode */
+$inline-min-height: 300px;
+$inline-border-color: #e0e0e0;
+$inline-border-radius: 4px;
+
+/* Inline-specific styles */
+.kiwi-wrap {
+    width: 100%;
+    height: 100%;
+    min-height: $inline-min-height;
+    border: 1px solid $inline-border-color;
+    border-radius: $inline-border-radius;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.kiwi-workspace {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.kiwi-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.kiwi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-small;
+    background-color: $color-primary;
+    color: $color-primary-text;
+}
+
+.kiwi-header-options {
+    display: flex;
+    align-items: center;
+}
+
+.kiwi-header-option {
+    cursor: pointer;
+    padding: $spacing-xsmall;
+    margin-left: $spacing-small;
+    color: $color-primary-text;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.kiwi-messagelist {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Override component styles for inline mode */
+.kiwi-startup-common-section-info {
+    border-width: 2px;
+}
+
+.kiwi-startup-common-section-info-content {
+    font-size: 1.2em;
+    padding: 1.5em;
+}
+
+.kiwi-statebrowser {
+    max-width: 200px;
+}
+
+.kiwi-nicklist {
+    max-width: 200px;
+}
+
+/* Responsive adjustments for inline mode */
+@media (max-width: 768px) {
+    .kiwi-statebrowser {
+        max-width: 160px;
+    }
+
+    .kiwi-nicklist {
+        max-width: 160px;
+    }
+}
+
+@media (max-width: 576px) {
+    .kiwi-workspace {
+        flex-direction: column;
+    }
+
+    .kiwi-statebrowser {
+        max-width: none;
+        max-height: 120px;
+        width: 100%;
+    }
+
+    .kiwi-nicklist {
+        max-width: none;
+        max-height: 120px;
+        width: 100%;
+    }
+}

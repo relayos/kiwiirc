@@ -1,0 +1,69 @@
+/* Fullscreen Rendering Mode Styles */
+@import '../base/variables';
+@import '../base/mixins';
+
+/* Override specific variables for fullscreen mode */
+$border-radius: 0;
+$widget-border-radius: 0;
+$widget-box-shadow: none;
+
+/* Fullscreen-specific styles */
+body {
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+.kiwi-wrap {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.kiwi-workspace {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.kiwi-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.kiwi-header {
+    border-radius: 0;
+}
+
+.kiwi-sidebar {
+    border-radius: 0;
+}
+
+.kiwi-statebrowser {
+    border-radius: 0;
+}
+
+.kiwi-messagelist {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.kiwi-controlinput {
+    border-radius: 0;
+}
+
+/* Override component styles for fullscreen mode */
+.kiwi-startup-common-section-info {
+    border-width: 3px;
+}
+
+.kiwi-startup-common-section-info-content {
+    max-width: 600px;
+}
