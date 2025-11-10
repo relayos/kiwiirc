@@ -92,6 +92,8 @@ module.exports = {
 
         const jsRule = config.module.rule('js');
         jsRule.uses.clear();
+        jsRule.exclude.clear();
+        jsRule.exclude.add(/node_modules/);
         jsRule.use('exports-loader').loader('exports-loader');
         jsRule.use('babel-loader').loader('babel-loader');
 
