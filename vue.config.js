@@ -77,6 +77,7 @@ module.exports = {
         config.plugin('html').tap((args) => {
             args[0].template = path.join(__dirname, 'index.html');
             args[0].minify = false;
+            args[0].chunks = ['chunk-vendors', 'chunk-common', 'app'];
             return args;
         });
 
@@ -92,8 +93,6 @@ module.exports = {
 
         const jsRule = config.module.rule('js');
         jsRule.uses.clear();
-        jsRule.exclude.clear();
-        jsRule.exclude.add(/node_modules/);
         jsRule.use('exports-loader').loader('exports-loader');
         jsRule.use('babel-loader').loader('babel-loader');
 

@@ -27,7 +27,7 @@ module.exports = function(source) {
         let a = '\r\n';
         a += `${entry} = ${entry} || {};\r\n`;
         a += accesorString(resource);
-        a += `\r\n${entry}.${resource} = exports.default ? exports.default : exports;\r\n`;
+        a += `\r\n${entry}.${resource} = (typeof exports !== 'undefined' ? (exports.default || exports) : (typeof module !== 'undefined' && module.exports ? (module.exports.default || module.exports) : {}));\r\n`;
 
         source += a;
     }

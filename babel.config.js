@@ -4,7 +4,7 @@ module.exports = {
             '@vue/cli-plugin-babel/preset',
             {
                 useBuiltIns: 'entry',
-                modules: 'commonjs',
+                modules: false,
                 corejs: { version: 3, proposals: true },
             },
         ],
