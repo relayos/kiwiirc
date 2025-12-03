@@ -1,0 +1,16 @@
+# .woodpecker.yml
+steps:
+  - name: install
+    image: node:20
+    commands:
+      - npm install
+
+  - name: build
+    image: node:20
+    commands:
+      - npm run build
+
+  - name: test
+    image: node:20
+    commands:
+      - npm test
