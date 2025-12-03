@@ -1,16 +1,18 @@
-# .woodpecker.yml
 steps:
-  - name: install
-    image: node:20
+  - name: build-and-push
+    image: docker:24-cli
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      GHCR_TOKEN:
+        from_secret: ghcr_token
     commands:
-      - npm install
+      - echo "$GHCR_TOKEN" | docker login ghcr.io -u allenday --password-stdin
+      - docker build -t ghcr.io/relayos/kiwiirc:${CI_COMMIT_SHA:0:8} .
+      - docker build -t ghcr.io/relayos/kiwiirc:latest .
+      - docker push ghcr.io/relayos/kiwiirc:${CI_COMMIT_SHA:0:8}
+      - docker push ghcr.io/relayos/kiwiirc:latest
 
-  - name: build
-    image: node:20
-    commands:
-      - npm run build
-
-  - name: test
-    image: node:20
-    commands:
-      - npm test
+when:
+  event: push
+  branch: master
