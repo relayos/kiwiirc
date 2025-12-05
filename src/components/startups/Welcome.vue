@@ -70,6 +70,19 @@
                     :network="network"
                 />
 
+                <div v-if="oauthConfig" class="kiwi-welcome-oauth">
+                    <button
+                        type="button"
+                        class="u-button u-button-secondary"
+                        :disabled="oauthLoading"
+                        @click="startOAuth"
+                    >
+                        <span v-if="!oauthLoading">Login with WordPress</span>
+                        <i v-else class="fa fa-spinner fa-spin" aria-hidden="true" />
+                    </button>
+                    <div v-if="oauthError" class="kiwi-welcome-simple-error">{{ oauthError }}</div>
+                </div>
+
                 <button
                     v-if="!network || network.state === 'disconnected'"
                     :disabled="!readyToStart"
@@ -116,6 +129,8 @@ export default {
             channel: '',
             nick: '',
             password: '',
+            oauthLoading: false,
+            oauthError: '',
             showChannel: true,
             showPass: true,
             toggablePass: true,
@@ -145,6 +160,9 @@ export default {
             return typeof footer === 'string' ?
                 footer :
                 '';
+        },
+        oauthConfig() {
+            return this.$state.settings.oauth || null;
         },
         termsContent() {
             let terms = this.$state.settings.startupOptions.termsContent;
@@ -234,6 +252,7 @@ export default {
         },
     },
     created() {
+        log.error('Welcome created', { search: window.location.search });
         let options = this.startupOptions;
         let connectOptions = this.connectOptions();
 
@@ -296,8 +315,173 @@ export default {
         if (options.autoConnect && this.readyToStart) {
             this.startUp();
         }
+
+        // OAuth bootstrap
+        this.restoreOAuth();
+        this.handleOAuthCallback();
     },
     methods: {
+        startOAuth() {
+            if (!this.oauthConfig) {
+                return;
+            }
+            const state = Math.random().toString(16).slice(2, 10) + Date.now();
+            try {
+                window.sessionStorage.setItem('kiwi_oauth_state', state);
+            } catch (err) {
+                // ignore
+            }
+            const url = new URL(this.oauthConfig.login_url);
+            url.searchParams.set('state', state);
+            window.location = url.toString();
+        },
+        restoreOAuth() {
+            try {
+                const raw = window.localStorage.getItem('kiwi_oauth_login');
+                if (!raw) {
+                    return;
+                }
+                const data = JSON.parse(raw);
+                if (data && data.username && data.access_token && (!data.expires || Date.now() < data.expires)) {
+                    this.nick = data.username;
+                    this.password = '';
+                    this.showPass = false;
+                }
+            } catch (err) {
+                // ignore
+            }
+        },
+        async handleOAuthCallback() {
+            if (!this.oauthConfig) {
+                return;
+            }
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+            const state = params.get('state');
+            if (!code) {
+                return;
+            }
+            let storedState = null;
+            try {
+                storedState = window.sessionStorage.getItem('kiwi_oauth_state');
+            } catch (err) {
+                // ignore storage errors (eg. disabled)
+            }
+            log.error('OAuth callback received', { code: !!code, state, storedState: storedState || '(none)' });
+            if (storedState && storedState !== state) {
+                this.oauthError = 'OAuth state mismatch';
+                log.warn('OAuth state mismatch', { state, storedState });
+                return;
+            }
+            try {
+                window.sessionStorage.removeItem('kiwi_oauth_state');
+            } catch (err) {
+                // ignore
+            }
+            this.oauthLoading = true;
+            try {
+                const tokenResp = await this.exchangeCode(code);
+                if (!tokenResp || !tokenResp.access_token) {
+                    throw new Error('No access token');
+                }
+                const profile = await this.fetchProfile(tokenResp.access_token, tokenResp.id_token);
+                const username = this.pickUsername(profile);
+                if (!username) {
+                    throw new Error('No username in profile');
+                }
+                const expires = tokenResp.expires_in ? (Date.now() + tokenResp.expires_in * 1000) : 0;
+                const storeObj = {
+                    access_token: tokenResp.access_token,
+                    id_token: tokenResp.id_token || '',
+                    username,
+                    expires,
+                };
+                window.localStorage.setItem('kiwi_oauth_login', JSON.stringify(storeObj));
+                this.nick = username;
+                this.password = '';
+                this.showPass = false;
+                // Drop query params
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } catch (err) {
+                this.oauthError = err.message || 'OAuth failed';
+                log.error('OAuth exchange failed', { err: err && err.message ? err.message : String(err) });
+            } finally {
+                this.oauthLoading = false;
+            }
+        },
+        async exchangeCode(code) {
+            const body = new URLSearchParams();
+            body.set('grant_type', 'authorization_code');
+            body.set('code', code);
+            body.set('redirect_uri', this.oauthConfig.redirect_uri);
+            body.set('client_id', this.oauthConfig.client_id || '');
+            if (this.oauthConfig.client_secret) {
+                body.set('client_secret', this.oauthConfig.client_secret);
+            }
+            const resp = await fetch(this.oauthConfig.token_url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString(),
+            });
+            if (!resp.ok) {
+                throw new Error('Token exchange failed');
+            }
+            return await resp.json();
+        },
+        async fetchProfile(accessToken, idToken) {
+            if (idToken) {
+                try {
+                    const parts = idToken.split('.');
+                    if (parts.length === 3) {
+                        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                        return payload || {};
+                    }
+                } catch (err) {
+                    // ignore
+                }
+            }
+            if (this.oauthConfig.me_url) {
+                try {
+                    const resp = await fetch(this.oauthConfig.me_url, {
+                        headers: { Authorization: `Bearer ${accessToken}` },
+                    });
+                    if (resp.ok) {
+                        const json = await resp.json();
+                        if (json) return json;
+                    } else {
+                        log.error('Profile fetch failed', { status: resp.status, statusText: resp.statusText });
+                    }
+                } catch (err) {
+                    log.error('Profile fetch failed', { err: err && err.message ? err.message : String(err) });
+                }
+            }
+            return {};
+        },
+        pickUsername(profile) {
+            const keys = ['preferred_username', 'username', 'user_login', 'user_nicename', 'name'];
+            for (let k of keys) {
+                if (profile[k] && typeof profile[k] === 'string') {
+                    return this.sanitize(profile[k]);
+                }
+            }
+            if (profile.email && typeof profile.email === 'string') {
+                const at = profile.email.indexOf('@');
+                if (at > 0) {
+                    return this.sanitize(profile.email.substr(0, at));
+                }
+            }
+            return '';
+        },
+        sanitize(str) {
+            let out = (str || '').trim().replace(/[^0-9a-zA-Z_-]/g, '');
+            if (!out) {
+                return '';
+            }
+            if (/^[0-9]/.test(out)) {
+                out = 'u_' + out;
+            }
+            return out;
+        },
         onAltClose(event) {
             if (event.channel) {
                 this.channel = event.channel;

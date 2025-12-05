@@ -28,6 +28,22 @@ const serverConnections = Object.create(null);
 const createdChannels = Object.create(null);
 const controlChannel = '0';
 
+function getJwtToken() {
+    try {
+        let raw = window.localStorage.getItem('kiwi_oauth_login');
+        if (!raw) {
+            return '';
+        }
+        let data = JSON.parse(raw);
+        if (data && data.access_token && (!data.expires || Date.now() < data.expires)) {
+            return data.access_token;
+        }
+    } catch (err) {
+        // ignore
+    }
+    return '';
+}
+
 /**
  *
  * @param {String} _addr Sockjs endpoint
@@ -36,6 +52,13 @@ const controlChannel = '0';
  */
 export function createChannelConstructor(_addr, sessionId, _socketChannel) {
     let addr = _addr.toLowerCase();
+
+    // Append JWT token if present
+    const token = getJwtToken();
+    if (token) {
+        const sep = addr.indexOf('?') === -1 ? '?' : '&';
+        addr = `${addr}${sep}jwt=${encodeURIComponent(token)}`;
+    }
 
     if (!serverConnections[addr]) {
         serverConnections[addr] = createNewConnection(addr, sessionId);
