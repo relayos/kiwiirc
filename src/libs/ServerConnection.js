@@ -28,7 +28,7 @@ const serverConnections = Object.create(null);
 const createdChannels = Object.create(null);
 const controlChannel = '0';
 
-function getJwtToken() {
+function getAccessToken() {
     try {
         let raw = window.localStorage.getItem('kiwi_oauth_login');
         if (!raw) {
@@ -53,11 +53,11 @@ function getJwtToken() {
 export function createChannelConstructor(_addr, sessionId, _socketChannel) {
     let addr = _addr.toLowerCase();
 
-    // Append JWT token if present
-    const token = getJwtToken();
+    // Append OAuth access token if present
+    const token = getAccessToken();
     if (token) {
         const sep = addr.indexOf('?') === -1 ? '?' : '&';
-        addr = `${addr}${sep}jwt=${encodeURIComponent(token)}`;
+        addr = `${addr}${sep}token=${encodeURIComponent(token)}`;
     }
 
     if (!serverConnections[addr]) {
