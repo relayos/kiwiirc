@@ -44,6 +44,16 @@ function getAccessToken() {
     return '';
 }
 
+// Debug: extra params to append to websocket URL
+// Set via: localStorage.setItem('kiwi_debug_params', 'foo=bar&baz=qux')
+function getDebugParams() {
+    try {
+        return window.localStorage.getItem('kiwi_debug_params') || '';
+    } catch (err) {
+        return '';
+    }
+}
+
 /**
  *
  * @param {String} _addr Sockjs endpoint
@@ -58,6 +68,15 @@ export function createChannelConstructor(_addr, sessionId, _socketChannel) {
     if (token) {
         const sep = addr.indexOf('?') === -1 ? '?' : '&';
         addr = `${addr}${sep}token=${encodeURIComponent(token)}`;
+    }
+
+    // Append debug params if set (for testing plugins)
+    // Set via: localStorage.setItem('kiwi_debug_params', 'foo=bar&baz=qux')
+    const debugParams = getDebugParams();
+    if (debugParams) {
+        const sep = addr.indexOf('?') === -1 ? '?' : '&';
+        addr = `${addr}${sep}${debugParams}`;
+        console.info('[kiwi] Debug params appended to websocket URL:', debugParams);
     }
 
     if (!serverConnections[addr]) {
