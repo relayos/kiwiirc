@@ -252,7 +252,7 @@ export default {
         },
     },
     created() {
-        log.error('Welcome created', { search: window.location.search });
+        log.debug('Welcome created', { search: window.location.search });
         let options = this.startupOptions;
         let connectOptions = this.connectOptions();
 
@@ -367,7 +367,7 @@ export default {
             } catch (err) {
                 // ignore storage errors (eg. disabled)
             }
-            log.error('OAuth callback received', { code: !!code, state, storedState: storedState || '(none)' });
+            log.debug('OAuth callback received', { code: !!code, state, storedState: storedState || '(none)' });
             if (storedState && storedState !== state) {
                 this.oauthError = 'OAuth state mismatch';
                 log.warn('OAuth state mismatch', { state, storedState });
