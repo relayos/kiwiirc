@@ -86,6 +86,24 @@
                     <i class="fa fa-spin fa-spinner" aria-hidden="true" />
                 </button>
 
+                <div
+                    v-if="relayosUpgradePath"
+                    class="kiwi-welcome-relayos-upgrade"
+                >
+                    <a
+                        class="u-button u-button-secondary kiwi-welcome-relayos-upgrade-link"
+                        :href="relayosUpgradePath.url"
+                    >
+                        {{ relayosUpgradePath.label }}
+                    </a>
+                    <div
+                        v-if="relayosUpgradePath.description"
+                        class="kiwi-welcome-relayos-upgrade-description"
+                    >
+                        {{ relayosUpgradePath.description }}
+                    </div>
+                </div>
+
                 <div v-html="footerText" />
             </form>
         </template>
@@ -157,6 +175,18 @@ export default {
             return typeof greeting === 'string' ?
                 greeting :
                 this.$t('start_button');
+        },
+        relayosUpgradePath() {
+            let upgrade = this.$state.settings.relayosUpgradePath || {};
+            if (!upgrade.url) {
+                return null;
+            }
+
+            return {
+                label: upgrade.label || 'Use persistent chat',
+                url: upgrade.url,
+                description: upgrade.description || '',
+            };
         },
         isNickValid() {
             let nickPatternStr = this.$state.setting('startupOptions.nick_format');
@@ -542,6 +572,26 @@ form.kiwi-welcome-simple-form h2 {
 .kiwi-welcome-simple-start[disabled] {
     cursor: not-allowed;
     opacity: 0.65;
+}
+
+.kiwi-welcome-relayos-upgrade {
+    margin: 14px 0 24px 0;
+    text-align: center;
+}
+
+.kiwi-welcome-relayos-upgrade-link {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    line-height: 46px;
+    font-size: 1.05em;
+    text-decoration: none;
+}
+
+.kiwi-welcome-relayos-upgrade-description {
+    margin-top: 10px;
+    opacity: 0.78;
+    line-height: 1.4;
 }
 
 </style>
